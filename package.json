@@ -1,0 +1,40 @@
+{
+  "name": "@pixdif/core",
+  "version": "0.1.0",
+  "description": "Core Libraries of PixDif",
+  "main": "dist",
+  "scripts": {
+    "build": "tsc",
+    "debug": "tsc --sourceMap --incremental",
+    "test": "npm run lint && npm run jest",
+    "lint": "eslint --ext=js,ts .",
+    "jest": "jest --no-cache --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pixdif/core.git"
+  },
+  "keywords": [
+    "pixel",
+    "difference",
+    "compare",
+    "image"
+  ],
+  "author": "Kazuichi Takashiro",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pixdif/core/issues"
+  },
+  "homepage": "https://github.com/pixdif/core#readme",
+  "devDependencies": {
+    "@types/jest": "^28.1.6",
+    "@typescript-eslint/eslint-plugin": "^5.31.0",
+    "@typescript-eslint/parser": "^5.31.0",
+    "eslint": "^8.20.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "jest": "^28.1.3",
+    "ts-jest": "^28.0.7",
+    "typescript": "^4.7.4"
+  }
+}
