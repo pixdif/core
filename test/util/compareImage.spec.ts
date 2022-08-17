@@ -9,13 +9,17 @@ const b = path.resolve(__dirname, '../sample/shapes-b.png');
 const c = path.resolve(__dirname, '../sample/circle.png');
 
 test('Compare the same image', async () => {
-	const res = await compareImage(a, a);
+	const expected = fs.createReadStream(a);
+	const actual = fs.createReadStream(a);
+	const res = await compareImage(expected, actual);
 	expect(res.diff).toBe(0);
 	expect(res.dimension).toBe(81060);
 });
 
 test('Compare 2 images', async () => {
-	const res = await compareImage(a, b);
+	const expected = fs.createReadStream(a);
+	const actual = fs.createReadStream(b);
+	const res = await compareImage(expected, actual);
 	expect(res.diff).toBe(10782);
 	expect(res.dimension).toBe(81060);
 
@@ -27,7 +31,9 @@ test('Compare 2 images', async () => {
 });
 
 test('Compare images of different width and height', async () => {
-	const res = await compareImage(a, c);
+	const expected = fs.createReadStream(a);
+	const actual = fs.createReadStream(c);
+	const res = await compareImage(expected, actual);
 	expect(res.diff).toBe(107712);
 	expect(res.dimension).toBe(300 * 420);
 

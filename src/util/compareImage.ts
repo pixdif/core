@@ -1,4 +1,4 @@
-import fs from 'fs';
+import { Readable } from 'stream';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
 
@@ -24,16 +24,16 @@ interface Comparison {
 
 /**
  * Compare two images and generate their diff image
- * @param imageAPath expected
- * @param imageBPath actual
+ * @param expected expected
+ * @param actual actual
  * @return number of mismatched pixels and total pixels
  */
 async function compareImage(
-	imageAPath: string,
-	imageBPath: string,
+	expected: Readable,
+	actual: Readable,
 ): Promise<Comparison> {
-	const imageA = fs.createReadStream(imageAPath).pipe(new PNG());
-	const imageB = fs.createReadStream(imageBPath).pipe(new PNG());
+	const imageA = expected.pipe(new PNG());
+	const imageB = actual.pipe(new PNG());
 
 	await Promise.all([
 		waitFor(imageA, 'parsed'),
