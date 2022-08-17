@@ -31,6 +31,7 @@ module.exports = {
 			'tab',
 		],
 		'linebreak-style': 'off',
+		'no-await-in-loop': 'off',
 		'no-plusplus': 'off',
 		'no-restricted-syntax': [
 			'error',
