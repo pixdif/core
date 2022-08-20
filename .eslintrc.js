@@ -33,10 +33,13 @@ module.exports = {
 		'linebreak-style': 'off',
 		'no-await-in-loop': 'off',
 		'no-plusplus': 'off',
+		'no-redeclare': 'off',
 		'no-restricted-syntax': [
 			'error',
 			'WithStatement',
 		],
+		'no-shadow': 'off',
 		'no-tabs': 'off',
+		'no-unused-vars': 'off',
 	},
 };
