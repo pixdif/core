@@ -2,6 +2,7 @@ import fs from 'fs';
 import fsp from 'fs/promises';
 import path from 'path';
 import { EventEmitter } from 'events';
+import { PassThrough } from 'stream';
 
 import {
 	Progress,
@@ -9,6 +10,7 @@ import {
 import Parser from '@pixdif/parser';
 
 import compareImage from '../util/compareImage';
+import CacheParser from './CacheParser';
 
 type ParserType = new(filePath: string) => Parser;
 
@@ -23,11 +25,6 @@ function parse(filePath: string): Parser {
 function getImageDir(filePath: string): string {
 	const info = path.parse(filePath);
 	return path.join(info.dir, info.name);
-}
-
-interface CacheMeta {
-	pageNum?: number;
-	fingerprint?: string;
 }
 
 export const enum Action {
@@ -120,77 +117,57 @@ class Comparator extends EventEmitter {
 		} = this;
 
 		// Read baseline cache meta
-		const expectedCacheDir = path.join(cacheDir, getImageDir(expected));
-		const cacheMetaFile = path.join(expectedCacheDir, '.meta');
-		let cacheMeta: CacheMeta = {};
-		if (fs.existsSync(cacheMetaFile)) {
-			try {
-				cacheMeta = JSON.parse(await fsp.readFile(cacheMetaFile, 'utf-8'));
-			} catch (error) {
-				// Do nothing
-			}
-		} else {
-			await fsp.mkdir(expectedCacheDir, { recursive: true });
-		}
+		const baseline = new CacheParser(parse(expected), {
+			cacheDir: path.join(cacheDir, getImageDir(expected)),
+		});
 
 		// Update image cache if the baseline is updated
-		let expectedPageNum = cacheMeta.pageNum || 0;
-		const baseline = parse(expected);
-		const expectedFingerprint = await baseline.getFingerprint();
-		if (expectedFingerprint !== cacheMeta.fingerprint) {
-			expectedPageNum = await baseline.open();
-			for (let i = 1; i <= expectedPageNum; i++) {
+		const expectedImageDir = path.join(imageDir, 'expected');
+		await fsp.mkdir(expectedImageDir, { recursive: true });
+
+		const expectedPageNum = await baseline.open();
+		const validCache = baseline.isValid();
+		for (let i = 1; i <= expectedPageNum; i++) {
+			if (!validCache) {
 				this.emit(Action.Preparing, {
 					current: i,
 					limit: expectedPageNum,
 				});
-				const image = await baseline.getImage(i);
-				const out = fs.createWriteStream(path.join(expectedCacheDir, `${i}.png`));
-				image.pipe(out);
 			}
-			cacheMeta = {
-				fingerprint: expectedFingerprint,
-				pageNum: expectedPageNum,
-			};
-			await fsp.writeFile(cacheMetaFile, JSON.stringify(cacheMeta));
+			this.emit(Action.Copying, { current: i, limit: expectedPageNum });
+			const from = await baseline.getImage(i);
+			const to = fs.createWriteStream(path.join(expectedImageDir, `${i}.png`));
+			from.pipe(to);
+
+			if (!validCache) {
+				await baseline.commitCache();
+			}
 		}
 
-		// Make expected and actual image directory
-		const expectedImageDir = path.join(imageDir, 'expected');
-		await fsp.mkdir(expectedImageDir, { recursive: true });
 		const actualImageDir = path.join(imageDir, 'actual');
 		await fsp.mkdir(actualImageDir, { recursive: true });
 
 		const diffs = [];
 		const target = parse(actual);
-		const targetPageNum = await target.open();
-		const pageNum = Math.min(expectedPageNum, targetPageNum);
+		const actualPageNum = await target.open();
+		const pageNum = Math.min(expectedPageNum, actualPageNum);
 
-		this.emit(Action.Copying, { current: 0, limit: pageNum });
-		for (let i = 1; i <= expectedPageNum; i++) {
-			this.emit(Action.Copying, { current: i, limit: pageNum });
-			const from = path.join(expectedCacheDir, `${i}.png`);
-			const to = path.join(expectedImageDir, `${i}.png`);
-			await fsp.copyFile(from, to);
-		}
-
-		this.emit(Action.Converting, { current: 0, limit: pageNum });
-		this.emit(Action.Comparing, { current: 0, limit: pageNum });
 		for (let i = 1; i <= pageNum; i++) {
-			const expectedPath = path.join(expectedImageDir, `${i}.png`);
 			const actualPath = path.join(actualImageDir, `${i}.png`);
 			const outputPath = path.join(imageDir, `${i}.png`);
 
 			this.emit(Action.Converting, { current: i, limit: pageNum });
 			const actualImage = await target.getImage(i);
-			actualImage.pipe(fs.createWriteStream(actualPath));
+			actualImage.pipe(new PassThrough()).pipe(fs.createWriteStream(actualPath));
 
 			this.emit(Action.Comparing, { current: i, limit: pageNum });
-			const expectedImage = fs.createReadStream(expectedPath);
+			const expectedImage = await baseline.getImage(i);
 			try {
 				const res = await compareImage(expectedImage, actualImage);
 				diffs.push(res.diff / res.dimension);
-				res.image.pipe(fs.createWriteStream(outputPath));
+				if (res.diff > 0) {
+					res.image.pipe(fs.createWriteStream(outputPath));
+				}
 			} catch (error) {
 				this.emit(
 					Action.Comparing,
@@ -204,9 +181,9 @@ class Comparator extends EventEmitter {
 			}
 		}
 
-		if (expectedPageNum !== targetPageNum) {
+		if (expectedPageNum !== actualPageNum) {
 			// Mark lost pages. The difference should be 100%
-			const lost = Math.abs(expectedPageNum - targetPageNum);
+			const lost = Math.abs(expectedPageNum - actualPageNum);
 			for (let i = 0; i < lost; i++) {
 				diffs.push(1);
 			}
