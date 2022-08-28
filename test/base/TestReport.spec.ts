@@ -14,8 +14,8 @@ const config: Config = {
 it('saves an empty report', async () => {
 	const to = 'output/empty-report/';
 
-	const report = new TestReport(config);
-	await report.save(to);
+	const report = new TestReport(to, config);
+	await report.save();
 
 	expect(fs.existsSync(path.join(to, 'index.html'))).toBe(true);
 	expect(fs.existsSync(path.join(to, 'diff-viewer.html'))).toBe(true);
@@ -34,7 +34,7 @@ it('saves a success and a failure', async () => {
 		id: 0,
 		name: 'success',
 		path: 'success.pdf',
-		baseline: 'base/success.pdf',
+		expected: 'base/success.pdf',
 		actual: 'out/success.pdf',
 		status: TestStatus.Matched,
 	};
@@ -42,16 +42,16 @@ it('saves a success and a failure', async () => {
 		id: 0,
 		name: 'failure',
 		path: 'failure.pdf',
-		baseline: 'base/failure.pdf',
+		expected: 'base/failure.pdf',
 		actual: 'out/failure.pdf',
 		status: TestStatus.Mismatched,
 	};
-	const report = new TestReport(config, [success]);
+	const to = 'output/sample';
+	const report = new TestReport(to, config, [success]);
 	report.add(failure);
 	expect(report.length).toBe(2);
 
-	const to = 'output/sample';
-	await report.save(to);
+	await report.save();
 
 	const { testCases } = JSON.parse(await fsp.readFile(path.join(to, 'test-report.json'), 'utf8'));
 	expect(testCases).toHaveLength(2);
