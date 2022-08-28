@@ -15,13 +15,16 @@ function findReporter(reporter: string): string {
 }
 
 export default class TestReport {
+	private location: string;
+
 	private reporter = '@pixdif/html-reporter';
 
 	private config: Config;
 
 	private testCases: TestCase[];
 
-	constructor(config: Config, testCases: TestCase[] = []) {
+	constructor(location: string, config: Config, testCases: TestCase[] = []) {
+		this.location = location;
 		this.config = config;
 		this.testCases = testCases;
 	}
@@ -59,11 +62,10 @@ export default class TestReport {
 
 	/**
 	 * Save the test report and configuration to a directory with GUI.
-	 * @param outputDir
 	 */
-	async save(outputDir: string): Promise<void> {
+	async save(): Promise<void> {
 		const reporterDir = findReporter(this.reporter);
-
+		const outputDir = this.location;
 		if (!fs.existsSync(outputDir)) {
 			await fsp.mkdir(outputDir, { recursive: true });
 		}

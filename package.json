@@ -27,7 +27,6 @@
   },
   "homepage": "https://github.com/pixdif/core#readme",
   "devDependencies": {
-    "@pixdif/html-reporter": "^0.2.0",
     "@types/glob": "^7.2.0",
     "@types/jest": "^28.1.6",
     "@types/pixelmatch": "^5.2.4",
@@ -51,6 +50,7 @@
     "rimraf": "^3.0.2"
   },
   "peerDependencies": {
+    "@pixdif/html-reporter": "^0.2.1",
     "@pixdif/pdf-parser": "^0.1.2"
   }
 }
