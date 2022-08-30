@@ -154,7 +154,7 @@ class Comparator extends EventEmitter {
 
 		for (let i = 1; i <= pageNum; i++) {
 			const actualPath = path.join(actualImageDir, `${i}.png`);
-			const outputPath = path.join(imageDir, `${i}.png`);
+			const diffPath = path.join(imageDir, `${i}.png`);
 
 			this.emit(Action.Converting, { current: i, limit: pageNum });
 			const actualImage = await target.getImage(i);
@@ -166,7 +166,7 @@ class Comparator extends EventEmitter {
 				const res = await compareImage(expectedImage, actualImage);
 				diffs.push(res.diff / res.dimension);
 				if (res.diff > 0) {
-					res.image.pipe(fs.createWriteStream(outputPath));
+					res.image.pack().pipe(fs.createWriteStream(diffPath));
 				}
 			} catch (error) {
 				this.emit(

@@ -14,8 +14,8 @@
 			"program": "${workspaceFolder}/node_modules/jest/bin/jest.js",
 			"args": [
         "--runInBand",
-				"--timeout=99999999",
-				"${fileBasename}"
+				"--testTimeout=99999999",
+				"/${fileBasename}"
       ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
