@@ -11,6 +11,7 @@ import Parser from '@pixdif/parser';
 
 import compareImage from '../util/compareImage';
 import CacheParser from './CacheParser';
+import waitFor from '../util/waitFor';
 
 type ParserType = new(filePath: string) => Parser;
 
@@ -82,6 +83,8 @@ class Comparator extends EventEmitter {
 
 	protected imageDir: string;
 
+	protected tasks?: Promise<unknown>[];
+
 	/**
 	 * Compare if two files are the same
 	 * @param expected baseline file path
@@ -106,6 +109,17 @@ class Comparator extends EventEmitter {
 	}
 
 	/**
+	 * Wait until the comparator is not running and all files are written to hard disk.
+	 */
+	async idle(): Promise<void> {
+		if (!this.tasks) {
+			return;
+		}
+		await Promise.all(this.tasks);
+		delete this.tasks;
+	}
+
+	/**
 	 * @return Differences of each image
 	 */
 	async exec(): Promise<number[]> {
@@ -115,6 +129,8 @@ class Comparator extends EventEmitter {
 			cacheDir,
 			imageDir,
 		} = this;
+
+		const tasks: Promise<unknown>[] = [];
 
 		// Read baseline cache meta
 		const baseline = new CacheParser(parse(expected), {
@@ -136,8 +152,8 @@ class Comparator extends EventEmitter {
 			}
 			this.emit(Action.Copying, { current: i, limit: expectedPageNum });
 			const from = await baseline.getImage(i);
-			const to = fs.createWriteStream(path.join(expectedImageDir, `${i}.png`));
-			from.pipe(to);
+			const to = from.pipe(fs.createWriteStream(path.join(expectedImageDir, `${i}.png`)));
+			tasks.push(waitFor(to, 'close'));
 
 			if (!validCache) {
 				await baseline.commitCache();
@@ -158,7 +174,9 @@ class Comparator extends EventEmitter {
 
 			this.emit(Action.Converting, { current: i, limit: pageNum });
 			const actualImage = await target.getImage(i);
-			actualImage.pipe(new PassThrough()).pipe(fs.createWriteStream(actualPath));
+			const actualImageFile = actualImage.pipe(new PassThrough())
+				.pipe(fs.createWriteStream(actualPath));
+			tasks.push(waitFor(actualImageFile, 'close'));
 
 			this.emit(Action.Comparing, { current: i, limit: pageNum });
 			const expectedImage = await baseline.getImage(i);
@@ -166,7 +184,8 @@ class Comparator extends EventEmitter {
 				const res = await compareImage(expectedImage, actualImage);
 				diffs.push(res.diff / res.dimension);
 				if (res.diff > 0) {
-					res.image.pack().pipe(fs.createWriteStream(diffPath));
+					const diffImageFile = res.image.pack().pipe(fs.createWriteStream(diffPath));
+					tasks.push(waitFor(diffImageFile, 'close'));
 				}
 			} catch (error) {
 				this.emit(
@@ -189,6 +208,7 @@ class Comparator extends EventEmitter {
 			}
 		}
 
+		this.tasks = tasks;
 		return diffs;
 	}
 }
