@@ -1,7 +1,11 @@
 import BatchComparator from '../../src/base/BatchComparator';
+import rimraf from '../../src/util/rimraf';
 
 it('compares multiple files', async () => {
-	const cmp = new BatchComparator('output/batch');
+	const to = 'output/batch';
+	await rimraf(to);
+
+	const cmp = new BatchComparator(to);
 	cmp.addTask({
 		name: 'shape to shape',
 		path: 'test/sample/shape-to-shape.yaml',
@@ -27,5 +31,6 @@ it('compares multiple files', async () => {
 		actual: 'test/sample/not-found.pdf',
 	});
 	const report = await cmp.exec();
+	report.setFormat('@pixdif/html-reporter');
 	await report.save();
 });

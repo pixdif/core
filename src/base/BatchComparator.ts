@@ -15,7 +15,7 @@ interface BatchOptions {
 	/**
 	 * Difference threshold of 2 pixels. Default: 0.001
 	 */
-	diffThreshold?: number;
+	tolerance?: number;
 
 	/**
 	 * WebSocket endpoint to connect and manage baseline files. Default: localhost:5269
@@ -29,13 +29,6 @@ interface BatchProgress extends Progress {
 
 interface BatchCompareProgress extends BatchProgress {
 	comparator: Comparator;
-}
-
-interface BatchTask {
-	readonly name: string;
-	readonly path: string;
-	readonly expected: string;
-	readonly actual: string;
 }
 
 interface BatchComparator {
@@ -64,9 +57,9 @@ interface BatchComparator {
  * Compare multiple files in two directories.
  */
 class BatchComparator extends EventEmitter {
-	protected tasks: BatchTask[] = [];
+	protected tasks: TestCase[] = [];
 
-	protected diffThreshold: number;
+	protected tolerance: number;
 
 	protected wsEndpoint: string;
 
@@ -80,7 +73,7 @@ class BatchComparator extends EventEmitter {
 		super();
 
 		this.reportDir = reportDir;
-		this.diffThreshold = options?.diffThreshold ?? 0.001;
+		this.tolerance = options?.tolerance ?? 0.001;
 		this.wsEndpoint = options?.wsEndpoint ?? 'localhost:5269';
 	}
 
@@ -110,7 +103,7 @@ class BatchComparator extends EventEmitter {
 	 * Add a new task.
 	 * @param task batch task
 	 */
-	addTask(task: BatchTask): void {
+	addTask(task: TestCase): void {
 		this.tasks.push(task);
 	}
 
@@ -141,7 +134,7 @@ class BatchComparator extends EventEmitter {
 		this.emit('started');
 
 		const {
-			diffThreshold,
+			tolerance,
 			wsEndpoint,
 			reportDir,
 			cacheDir,
@@ -152,7 +145,6 @@ class BatchComparator extends EventEmitter {
 			this.progress++;
 
 			const testCase: TestCase = {
-				id: this.progress,
 				name: task.name,
 				path: task.path,
 				expected: path.relative(reportDir, task.expected),
@@ -182,7 +174,7 @@ class BatchComparator extends EventEmitter {
 				});
 				const diffs = await cmp.exec();
 				testCase.diffs = diffs;
-				const matched = diffs.every((diff: number): boolean => diff <= diffThreshold);
+				const matched = diffs.every((diff: number): boolean => diff <= tolerance);
 				testCase.status = matched ? TestStatus.Matched : TestStatus.Mismatched;
 			} else if (!baselineExists) {
 				testCase.status = TestStatus.ExpectedNotFound;
@@ -197,7 +189,7 @@ class BatchComparator extends EventEmitter {
 		this.emit('stopped');
 
 		const config = {
-			diffThreshold,
+			tolerance,
 			wsEndpoint,
 		};
 		return new TestReport(reportDir, config, testCases);

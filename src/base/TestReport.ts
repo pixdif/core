@@ -7,17 +7,28 @@ import {
 	TestCase,
 	TestStatus,
 	TestReport as TestReportModel,
+	TestReportWriter,
 } from '@pixdif/model';
 
-function findReporter(reporter: string): string {
-	const curDir = require.resolve(reporter);
-	return path.dirname(curDir);
+function loadReportWriter(format: string): TestReportWriter {
+	// eslint-disable-next-line import/no-dynamic-require, global-require
+	const reporter = require(format);
+	return reporter.default || reporter;
+}
+
+async function writeReport(format: string, data: TestReportModel, location: string): Promise<void> {
+	const write = loadReportWriter(format);
+	await write(data, location);
+}
+
+export const enum TestReportFormat {
+	Json = 'json',
 }
 
 export default class TestReport {
 	private location: string;
 
-	private reporter = '@pixdif/html-reporter';
+	private format: string = TestReportFormat.Json;
 
 	private config: Config;
 
@@ -27,6 +38,23 @@ export default class TestReport {
 		this.location = location;
 		this.config = config;
 		this.testCases = testCases;
+	}
+
+	/**
+	 * @returns Test report format (Default: JSON)
+	 */
+	getFormat(): string {
+		return this.format;
+	}
+
+	/**
+	 * Sets report format.
+	 * For built-in types, it can only be JSON.
+	 * For custom types, please specify a Node.js module that implements TestReportWriter.
+	 * @param format
+	 */
+	setFormat(format: string): void {
+		this.format = format;
 	}
 
 	getConfig(): Config {
@@ -64,37 +92,13 @@ export default class TestReport {
 	 * Save the test report and configuration to a directory with GUI.
 	 */
 	async save(): Promise<void> {
-		const reporterDir = findReporter(this.reporter);
-		const outputDir = this.location;
-		if (!fs.existsSync(outputDir)) {
-			await fsp.mkdir(outputDir, { recursive: true });
-		}
-
-		const report = JSON.stringify(this);
-		await fsp.writeFile(path.join(outputDir, 'test-report.data.js'), `window.testReport = ${report};`);
-		await fsp.writeFile(path.join(outputDir, 'test-report.json'), report);
-
-		await fsp.copyFile(path.join(reporterDir, 'index.html'), path.join(outputDir, 'index.html'));
-		await fsp.copyFile(path.join(reporterDir, 'diff-viewer.html'), path.join(outputDir, 'diff-viewer.html'));
-
-		const outputStaticDir = path.join(outputDir, 'static');
-		if (!fs.existsSync(outputStaticDir)) {
-			await fsp.mkdir(outputStaticDir);
-		}
-		const reporterStaticDir = path.join(reporterDir, 'static');
-		const staticFiles = await fsp.readdir(reporterStaticDir);
-		for (const staticFile of staticFiles) {
-			await fsp.copyFile(
-				path.join(reporterStaticDir, staticFile),
-				path.join(outputStaticDir, staticFile),
-			);
-		}
-
-		const failedCases = this.testCases
-			.filter((res) => res.status === TestStatus.Mismatched)
-			.map((res) => res.path);
-		if (failedCases.length > 0) {
-			await fsp.writeFile(path.join(outputDir, 'failed-cases.json'), JSON.stringify(failedCases));
+		switch (this.format) {
+		case TestReportFormat.Json:
+			await fsp.writeFile(this.location, JSON.stringify(this));
+			break;
+		default:
+			await writeReport(this.format, this.toJSON(), this.location);
+			break;
 		}
 	}
 }
