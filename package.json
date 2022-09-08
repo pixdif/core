@@ -26,6 +26,9 @@
     "url": "https://github.com/pixdif/core/issues"
   },
   "homepage": "https://github.com/pixdif/core#readme",
+  "files": [
+    "dist"
+  ],
   "devDependencies": {
     "@types/glob": "^7.2.0",
     "@types/jest": "^28.1.6",
