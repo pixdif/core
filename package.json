@@ -1,6 +1,6 @@
 {
   "name": "@pixdif/core",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Core Libraries of PixDif",
   "main": "dist",
   "scripts": {
