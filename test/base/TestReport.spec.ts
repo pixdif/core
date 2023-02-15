@@ -1,10 +1,11 @@
 import fs from 'fs';
 import fsp from 'fs/promises';
 import path from 'path';
+
+import rimraf from 'rimraf';
 import { Config, TestCase, TestStatus } from '@pixdif/model';
 
 import TestReport from '../../src/base/TestReport';
-import rimraf from '../../src/util/rimraf';
 
 const config: Config = {
 	tolerance: 0,

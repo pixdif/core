@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
 import { PNG } from 'pngjs';
+import rimraf from 'rimraf';
 
 import Comparator, { compare } from '../../src/base/Comparator';
-import rimraf from '../../src/util/rimraf';
 import waitFor from '../../src/util/waitFor';
 
 it('compares the same PDF file', async () => {

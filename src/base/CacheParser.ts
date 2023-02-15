@@ -6,9 +6,10 @@ import {
 	PassThrough,
 } from 'stream';
 
+import rimraf from 'rimraf';
 import Parser from '@pixdif/parser';
+
 import waitFor from '../util/waitFor';
-import rimraf from '../util/rimraf';
 
 interface CacheMeta {
 	pageNum?: number;

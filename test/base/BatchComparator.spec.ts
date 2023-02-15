@@ -1,5 +1,5 @@
+import rimraf from 'rimraf';
 import BatchComparator from '../../src/base/BatchComparator';
-import rimraf from '../../src/util/rimraf';
 
 it('compares multiple files', async () => {
 	const to = 'output/batch';
