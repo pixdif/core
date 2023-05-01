@@ -162,8 +162,8 @@ class BatchComparator extends EventEmitter {
 			const baselineExists = fs.existsSync(task.expected);
 			const actualExists = fs.existsSync(task.actual);
 			if (baselineExists && actualExists) {
-				const op = path.parse(task.path);
-				const imageDir = path.join(reportDir, 'image', op.dir, op.name);
+				const op = task.path && path.parse(task.path);
+				const imageDir = op ? path.join(reportDir, 'image', op.dir, op.name) : path.join(reportDir, 'image', task.name);
 				const cmp = new Comparator(task.expected, task.actual, {
 					imageDir,
 					cacheDir,
@@ -172,9 +172,14 @@ class BatchComparator extends EventEmitter {
 					...progress,
 					comparator: cmp,
 				});
-				const diffs = await cmp.exec();
-				testCase.diffs = diffs;
-				const matched = diffs.every((diff: number): boolean => diff <= tolerance);
+				const details = await cmp.exec();
+				testCase.details = details.map((detail) => ({
+					...detail,
+					expected: detail.expected ? path.relative(reportDir, detail.expected) : detail.expected,
+					actual: detail.actual ? path.relative(reportDir, detail.actual) : detail.actual,
+					diff: detail.diff ? path.relative(reportDir, detail.diff) : detail.diff,
+				}));
+				const matched = details.every(({ ratio }): boolean => ratio <= tolerance);
 				testCase.status = matched ? TestStatus.Matched : TestStatus.Mismatched;
 			} else if (!baselineExists) {
 				testCase.status = TestStatus.ExpectedNotFound;

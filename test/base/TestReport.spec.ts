@@ -1,8 +1,7 @@
 import fs from 'fs';
-import fsp from 'fs/promises';
 import path from 'path';
 
-import rimraf from 'rimraf';
+import { rimraf } from 'rimraf';
 import { Config, TestCase, TestStatus } from '@pixdif/model';
 
 import TestReport from '../../src/base/TestReport';
@@ -21,7 +20,6 @@ it('saves an empty report', async () => {
 	await report.save();
 
 	expect(fs.existsSync(path.join(to, 'index.html'))).toBe(true);
-	expect(fs.existsSync(path.join(to, 'diff-viewer.html'))).toBe(true);
 	expect(fs.existsSync(path.join(to, 'test-report.data.js'))).toBe(true);
 	expect(fs.existsSync(path.join(to, 'static'))).toBe(true);
 });

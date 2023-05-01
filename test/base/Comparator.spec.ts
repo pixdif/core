@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { PNG } from 'pngjs';
-import rimraf from 'rimraf';
+import { rimraf } from 'rimraf';
 
 import Comparator, { compare } from '../../src/base/Comparator';
 import waitFor from '../../src/util/waitFor';
@@ -12,7 +12,7 @@ it('compares the same PDF file', async () => {
 		imageDir,
 	});
 	expect(diff).toHaveLength(1);
-	expect(diff[0]).toBe(0);
+	expect(diff[0].ratio).toBe(0);
 	expect(fs.existsSync(path.join(imageDir, '1.png'))).toBe(false);
 	expect(fs.existsSync(path.join(imageDir, 'expected', '1.png'))).toBe(true);
 	expect(fs.existsSync(path.join(imageDir, 'actual', '1.png'))).toBe(true);
@@ -29,7 +29,7 @@ it('compares 2 different PDF files', async () => {
 	});
 	const diff = await cmp.exec();
 	expect(diff).toHaveLength(1);
-	expect(diff[0]).toBeGreaterThan(0);
+	expect(diff[0].ratio).toBeGreaterThan(0);
 
 	await cmp.idle();
 	const diffImageFile = path.join(imageDir, '1.png');

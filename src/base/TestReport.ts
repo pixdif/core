@@ -1,11 +1,7 @@
-import fs from 'fs';
 import fsp from 'fs/promises';
-import path from 'path';
-
 import {
 	Config,
 	TestCase,
-	TestStatus,
 	TestReport as TestReportModel,
 	TestReportWriter,
 } from '@pixdif/model';
@@ -82,9 +78,13 @@ export default class TestReport {
 	}
 
 	toJSON(): TestReportModel {
+		const cases: Record<string, TestCase> = {};
+		for (let i = 0; i < this.testCases.length; i++) {
+			cases[String(i + 1)] = this.testCases[i];
+		}
 		return {
 			config: this.config,
-			testCases: this.testCases,
+			cases,
 		};
 	}
 

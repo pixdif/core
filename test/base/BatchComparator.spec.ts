@@ -1,4 +1,4 @@
-import rimraf from 'rimraf';
+import { rimraf } from 'rimraf';
 import BatchComparator from '../../src/base/BatchComparator';
 
 it('compares multiple files', async () => {
@@ -8,7 +8,6 @@ it('compares multiple files', async () => {
 	const cmp = new BatchComparator(to);
 	cmp.addTask({
 		name: 'shape to shape',
-		path: 'test/sample/shape-to-shape.yaml',
 		expected: 'test/sample/shape.pdf',
 		actual: 'test/sample/shape.pdf',
 	});

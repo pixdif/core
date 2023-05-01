@@ -5,7 +5,7 @@ import { EventEmitter } from 'events';
 import { PassThrough } from 'stream';
 
 import {
-	Progress,
+	Progress, TestPoint,
 } from '@pixdif/model';
 import Parser from '@pixdif/parser';
 
@@ -122,7 +122,7 @@ class Comparator extends EventEmitter {
 	/**
 	 * @return Differences of each image
 	 */
-	async exec(): Promise<number[]> {
+	async exec(): Promise<TestPoint[]> {
 		const {
 			expected,
 			actual,
@@ -164,13 +164,15 @@ class Comparator extends EventEmitter {
 		const actualImageDir = path.join(imageDir, 'actual');
 		await fsp.mkdir(actualImageDir, { recursive: true });
 
-		const diffs = [];
+		const details: TestPoint[] = [];
 		const target = parse(actual);
 		await target.open();
 		const actualPageNum = await target.getPageNum();
 		const pageNum = Math.min(expectedPageNum, actualPageNum);
 
 		for (let i = 1; i <= pageNum; i++) {
+			const name = `Page ${i}`;
+			const expectedPath = path.join(expectedImageDir, `${i}.png`);
 			const actualPath = path.join(actualImageDir, `${i}.png`);
 			const diffPath = path.join(imageDir, `${i}.png`);
 
@@ -189,7 +191,14 @@ class Comparator extends EventEmitter {
 			const expectedImage = await baseline.getImage(i - 1);
 			try {
 				const res = await compareImage(expectedImage, actualImage);
-				diffs.push(res.diff / res.dimension);
+				const ratio = res.diff / res.dimension;
+				details.push({
+					name,
+					expected: expectedPath,
+					actual: actualPath,
+					diff: diffPath,
+					ratio,
+				});
 				if (res.diff > 0) {
 					const diffImageFile = res.image.pack().pipe(fs.createWriteStream(diffPath));
 					tasks.push(waitFor(diffImageFile, 'close'));
@@ -203,20 +212,31 @@ class Comparator extends EventEmitter {
 						error: (error instanceof Error) ? error : new Error(String(error)),
 					},
 				);
-				diffs.push(NaN);
+				details.push({
+					name,
+					expected: expectedPath,
+					actual: '',
+					ratio: NaN,
+				});
 			}
 		}
 
 		if (expectedPageNum !== actualPageNum) {
 			// Mark lost pages. The difference should be 100%
-			const lost = Math.abs(expectedPageNum - actualPageNum);
-			for (let i = 0; i < lost; i++) {
-				diffs.push(1);
+			const start = Math.min(expectedPageNum, actualPageNum) + 1;
+			const end = Math.max(expectedPageNum, actualPageNum);
+			for (let i = start; i <= end; i++) {
+				details.push({
+					name: `Page ${i}`,
+					expected: path.join(expectedImageDir, `${i}.png`),
+					actual: path.join(actualImageDir, `${i}.png`),
+					ratio: 1,
+				});
 			}
 		}
 
 		this.tasks = tasks;
-		return diffs;
+		return details;
 	}
 }
 
@@ -231,7 +251,7 @@ export async function compare(
 	expected: string,
 	actual: string,
 	options?: ComparisonOptions,
-): Promise<number[]> {
+): Promise<TestPoint[]> {
 	const cmp = new Comparator(expected, actual, options);
 	const diffs = await cmp.exec();
 	return diffs;

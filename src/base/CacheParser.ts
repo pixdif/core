@@ -6,7 +6,7 @@ import {
 	PassThrough,
 } from 'stream';
 
-import rimraf from 'rimraf';
+import { rimraf } from 'rimraf';
 import Parser from '@pixdif/parser';
 
 import waitFor from '../util/waitFor';
