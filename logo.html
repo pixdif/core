@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pixdif</title>
+<style>
+body {
+	margin: 0;
+	padding: 0;
+	background: transparent;
+}
+
+:root {
+	--icon-size: 128px;
+	--sun-size: 18px;
+	--mountain-size: 60px;
+}
+
+.icon {
+	width: var(--icon-size);
+	height: var(--icon-size);
+	overflow: hidden;
+	position: relative;
+}
+
+.picture {
+	width: 80px;
+	height: 80px;
+	border-radius: 18px;
+	position: absolute;
+	top: 6px;
+	left: 6px;
+	overflow: hidden;
+	background: linear-gradient(#e66465, #9198e5);
+}
+
+.sun {
+	width: var(--sun-size);
+	height: var(--sun-size);
+	border-radius: var(--sun-size);
+	position: absolute;
+	top: 20px;
+	left: 20px;
+	background: linear-gradient(#ffffff, #eaebf7);
+}
+
+.mountain {
+	width: var(--mountain-size);
+	height: var(--mountain-size);
+	transform: rotate(45deg);
+	background: linear-gradient(#ffffff, #eaebf7);
+	position: absolute;
+	top: 60px;
+	left: 10px;
+}
+
+.picture.actual {
+	background: linear-gradient(#8dc5f6, #79d46f);
+	top: 41px;
+	left: 41px;
+}
+
+.picture.actual > .sun {
+	background: linear-gradient(#f68d8d, #d4bb6f);
+}
+</style>
+</head>
+<body>
+	<div class="icon">
+		<div class="picture expected">
+			<div class="sun"></div>
+			<div class="mountain"></div>
+		</div>
+		<div class="picture actual">
+			<div class="sun"></div>
+			<div class="mountain"></div>
+		</div>
+</div>
+</body>
+</html>
