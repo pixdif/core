@@ -9,21 +9,26 @@ const cacheDir = 'output/cache/test/sample/shape';
 const filePath = 'test/sample/shape.pdf';
 
 describe('Normal Cases', () => {
-	it('generates cache', async () => {
-		const pdf = new PdfParser(filePath);
-		const parser = new CacheParser(pdf, { cacheDir });
+	const pdf = new PdfParser(filePath);
+	const parser = new CacheParser(pdf, { cacheDir });
+
+	beforeAll(async () => {
 		await parser.clearCache();
+	});
 
-		const imageNum = await parser.open();
-		expect(imageNum).toBe(1);
+	it('opens a PDF file', async () => {
+		await parser.open();
+		expect(await parser.getPageNum()).toBe(1);
+	});
 
-		const getImage = jest.spyOn(pdf, 'getImage');
-		const image1 = await parser.getImage(1);
+	it('generates cache', async () => {
+		const getPage = jest.spyOn(pdf, 'getPage');
+		const image1 = await parser.getImage(0);
 		await parser.commitCache();
 
-		const image2 = await parser.getImage(1);
-		expect(getImage).toBeCalledTimes(1);
-		expect(getImage).toBeCalledWith(1);
+		const image2 = await parser.getImage(0);
+		expect(getPage).toBeCalledTimes(1);
+		expect(getPage).toBeCalledWith(0);
 
 		const cmp = await compareImage(image1, image2);
 		expect(cmp.diff).toBe(0);
@@ -43,11 +48,11 @@ describe('Error Cases', () => {
 	});
 
 	it('can re-generate an image if it is deleted by mistake', async () => {
-		await fsp.unlink(path.join(cacheDir, '1.png'));
+		await fsp.unlink(path.join(cacheDir, '0.png'));
 
 		await parser.open();
 		expect(parser.isValid()).toBe(true);
-		await parser.getImage(1);
+		await parser.getImage(0);
 	});
 
 	it('does nothing if fingerprint is not changed', async () => {

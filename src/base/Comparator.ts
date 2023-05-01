@@ -141,7 +141,8 @@ class Comparator extends EventEmitter {
 		const expectedImageDir = path.join(imageDir, 'expected');
 		await fsp.mkdir(expectedImageDir, { recursive: true });
 
-		const expectedPageNum = await baseline.open();
+		await baseline.open();
+		const expectedPageNum = await baseline.getPageNum();
 		const validCache = baseline.isValid();
 		for (let i = 1; i <= expectedPageNum; i++) {
 			if (!validCache) {
@@ -151,7 +152,7 @@ class Comparator extends EventEmitter {
 				});
 			}
 			this.emit(Action.Copying, { current: i, limit: expectedPageNum });
-			const from = await baseline.getImage(i);
+			const from = await baseline.getImage(i - 1);
 			const to = from.pipe(fs.createWriteStream(path.join(expectedImageDir, `${i}.png`)));
 			tasks.push(waitFor(to, 'close'));
 
@@ -165,7 +166,8 @@ class Comparator extends EventEmitter {
 
 		const diffs = [];
 		const target = parse(actual);
-		const actualPageNum = await target.open();
+		await target.open();
+		const actualPageNum = await target.getPageNum();
 		const pageNum = Math.min(expectedPageNum, actualPageNum);
 
 		for (let i = 1; i <= pageNum; i++) {
@@ -173,13 +175,18 @@ class Comparator extends EventEmitter {
 			const diffPath = path.join(imageDir, `${i}.png`);
 
 			this.emit(Action.Converting, { current: i, limit: pageNum });
-			const actualImage = await target.getImage(i);
+			const actualPage = await target.getPage(i - 1);
+			if (!actualPage) {
+				throw new Error(`Failed to read page ${i}`);
+			}
+
+			const actualImage = await actualPage.getImage();
 			const actualImageFile = actualImage.pipe(new PassThrough())
 				.pipe(fs.createWriteStream(actualPath));
 			tasks.push(waitFor(actualImageFile, 'close'));
 
 			this.emit(Action.Comparing, { current: i, limit: pageNum });
-			const expectedImage = await baseline.getImage(i);
+			const expectedImage = await baseline.getImage(i - 1);
 			try {
 				const res = await compareImage(expectedImage, actualImage);
 				diffs.push(res.diff / res.dimension);

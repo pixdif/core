@@ -31,15 +31,19 @@ export default class CacheParser {
 		this.cacheDir = options.cacheDir;
 	}
 
-	async open(): Promise<number> {
+	async open(): Promise<void> {
 		const cacheMeta = await this.openCache();
 		if (cacheMeta.pageNum && cacheMeta.fingerprint === await this.getFingerprint()) {
 			this.cacheMeta = cacheMeta;
-			return cacheMeta.pageNum;
+			return;
 		}
-		const pageNum = await this.parser.open();
+		await this.parser.open();
+		const pageNum = await this.parser.getPageNum();
 		this.cacheMeta = { pageNum };
-		return pageNum;
+	}
+
+	async getPageNum(): Promise<number> {
+		return this.cacheMeta?.pageNum ?? 0;
 	}
 
 	isValid(): boolean {
@@ -56,10 +60,6 @@ export default class CacheParser {
 		return this.parser.getFingerprint();
 	}
 
-	getName(index: number): Promise<string | undefined> {
-		return this.parser.getName(index);
-	}
-
 	async getImage(index: number): Promise<Readable> {
 		const imageCachePath = path.join(this.cacheDir, `${index}.png`);
 		if (this.isValid()) {
@@ -69,7 +69,12 @@ export default class CacheParser {
 			await this.parser.open();
 		}
 
-		const image = await this.parser.getImage(index);
+		const page = await this.parser.getPage(index);
+		if (!page) {
+			throw new Error(`Failed to read page ${index}`);
+		}
+
+		const image = await page.getImage();
 		const dup = image.pipe(new PassThrough());
 		const cache = image.pipe(new PassThrough()).pipe(fs.createWriteStream(imageCachePath));
 		await waitFor(cache, 'finish');

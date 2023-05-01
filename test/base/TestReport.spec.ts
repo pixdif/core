@@ -26,7 +26,7 @@ it('saves an empty report', async () => {
 });
 
 it('saves a success and a failure', async () => {
-	const to = 'output/sample';
+	const to = 'output/test-report';
 	await rimraf(to);
 
 	const success: TestCase = {
