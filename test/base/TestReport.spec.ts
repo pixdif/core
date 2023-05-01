@@ -44,6 +44,7 @@ it('saves a success and a failure', async () => {
 	};
 	const report = new TestReport(to, config, [success]);
 	report.setFormat('@pixdif/html-reporter');
+	expect(report.getFormat()).toBe('@pixdif/html-reporter');
 	report.add(failure);
 	expect(report.length).toBe(2);
 

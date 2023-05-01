@@ -30,6 +30,8 @@ it('compares multiple files', async () => {
 		actual: 'test/sample/not-found.pdf',
 	});
 	const report = await cmp.exec();
+	report.setTitle('Sample Report');
+	expect(report.getTitle()).toBe('Sample Report');
 	report.setFormat('@pixdif/html-reporter');
 	await report.save();
 });

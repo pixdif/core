@@ -22,6 +22,8 @@ export const enum TestReportFormat {
 }
 
 export default class TestReport {
+	private title?: string;
+
 	private location: string;
 
 	private format: string = TestReportFormat.Json;
@@ -34,6 +36,21 @@ export default class TestReport {
 		this.location = location;
 		this.config = config;
 		this.testCases = testCases;
+	}
+
+	/**
+	 * @returns report title
+	 */
+	getTitle(): string | undefined {
+		return this.title;
+	}
+
+	/**
+	 * Customize report title.
+	 * @param title report title
+	 */
+	setTitle(title: string): void {
+		this.title = title;
 	}
 
 	/**
@@ -83,6 +100,7 @@ export default class TestReport {
 			cases[String(i + 1)] = this.testCases[i];
 		}
 		return {
+			title: this.title,
 			config: this.config,
 			cases,
 		};
