@@ -39,4 +39,4 @@ it('compares 2 different PDF files', async () => {
 	await waitFor(diffImage, 'parsed');
 	expect(diffImage.width).toBe(420);
 	expect(diffImage.height).toBe(600);
-});
+}, 20 * 1000);

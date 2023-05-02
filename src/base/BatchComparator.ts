@@ -127,7 +127,7 @@ class BatchComparator extends EventEmitter {
 	async exec(): Promise<TestReport> {
 		const limit = this.getProgressLimit();
 		if (limit <= 0) {
-			throw new Error('Please at least add one task.');
+			throw new Error('Please add one task at least.');
 		}
 
 		this.progress = 0;
