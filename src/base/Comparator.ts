@@ -171,7 +171,6 @@ class Comparator extends EventEmitter {
 		const pageNum = Math.min(expectedPageNum, actualPageNum);
 
 		for (let i = 1; i <= pageNum; i++) {
-			const name = `Page ${i}`;
 			const expectedPath = path.join(expectedImageDir, `${i}.png`);
 			const actualPath = path.join(actualImageDir, `${i}.png`);
 			const diffPath = path.join(imageDir, `${i}.png`);
@@ -181,6 +180,7 @@ class Comparator extends EventEmitter {
 			if (!actualPage) {
 				throw new Error(`Failed to read page ${i}`);
 			}
+			const name = actualPage.getTitle();
 
 			const actualImage = await actualPage.getImage();
 			const actualImageFile = actualImage.pipe(new PassThrough())

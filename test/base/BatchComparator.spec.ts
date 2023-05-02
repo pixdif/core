@@ -1,8 +1,9 @@
 import path from 'path';
 import { rimraf } from 'rimraf';
+import { TestStatus } from '@pixdif/model';
 
 import BatchComparator from '../../src/base/BatchComparator';
-import { TestStatus } from '@pixdif/model/dist';
+import type TestReport from '../../src/base/TestReport';
 
 const to = 'output/batch';
 const cmp = new BatchComparator(to);
@@ -37,11 +38,12 @@ it('adds tasks', async () => {
 	});
 });
 
-it('generates a report', async () => {
-	const report = await cmp.exec();
+let report: TestReport;
 
-	const raw = report.toJSON();
-	const testCase = raw.cases['1'];
+it('compares PDF files', async () => {
+	report = await cmp.exec();
+
+	const testCase = report.get(0);
 	expect(testCase).toEqual({
 		name: 'shape to shape',
 		expected: path.normalize('../../test/sample/shape.pdf'),
@@ -57,7 +59,9 @@ it('generates a report', async () => {
 			},
 		],
 	});
+});
 
+it('generates a report', async () => {
 	report.setTitle('Sample Report');
 	expect(report.getTitle()).toBe('Sample Report');
 	report.setFormat('@pixdif/html-reporter');
