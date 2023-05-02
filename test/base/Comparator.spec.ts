@@ -44,3 +44,8 @@ it('compares 2 different PDF files', async () => {
 	expect(diffImage.width).toBe(420);
 	expect(diffImage.height).toBe(600);
 }, 20 * 1000);
+
+it('compares unsupported files', async () => {
+	const script = 'test/base/Comparator.spec.ts';
+	await expect(() => compare(script, script)).rejects.toThrowError(`Failed to parse ${script}. Please install @pixdif/ts-parser and try again.`);
+});
