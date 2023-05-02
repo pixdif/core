@@ -1,3 +1,4 @@
+import { test } from '@jest/globals';
 import { EventEmitter } from 'events';
 
 import waitFor from '../../src/util/waitFor';

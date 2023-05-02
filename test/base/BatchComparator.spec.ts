@@ -1,3 +1,8 @@
+import {
+	beforeAll,
+	expect,
+	it,
+} from '@jest/globals';
 import path from 'path';
 import { rimraf } from 'rimraf';
 import { TestStatus } from '@pixdif/model';
@@ -5,7 +10,6 @@ import { TestStatus } from '@pixdif/model';
 import BatchComparator from '../../src/base/BatchComparator';
 import type TestReport from '../../src/base/TestReport';
 
-const sampleDir = 'test/sample';
 const to = 'output/batch';
 const cmp = new BatchComparator(to);
 

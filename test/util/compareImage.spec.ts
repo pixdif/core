@@ -1,3 +1,7 @@
+import {
+	expect,
+	test,
+} from '@jest/globals';
 import fs from 'fs';
 import fsp from 'fs/promises';
 import path from 'path';

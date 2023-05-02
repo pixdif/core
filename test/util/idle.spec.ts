@@ -1,3 +1,8 @@
+import {
+	test,
+	jest,
+} from '@jest/globals';
+
 import idle from '../../src/util/idle';
 
 jest.useFakeTimers();

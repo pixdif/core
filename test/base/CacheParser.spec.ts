@@ -1,3 +1,10 @@
+import {
+	beforeAll,
+	describe,
+	expect,
+	it,
+	jest,
+} from '@jest/globals';
 import fsp from 'fs/promises';
 import path from 'path';
 import PdfParser from '@pixdif/pdf-parser';

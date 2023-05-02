@@ -7,7 +7,7 @@
     "build": "tsc",
     "debug": "tsc --sourceMap --incremental",
     "test": "npm run lint && npm run jest",
-    "lint": "eslint --ext=js,ts .",
+    "lint": "eslint --ext=js,ts --max-warnings=0 .",
     "jest": "jest --no-cache --coverage"
   },
   "repository": {
@@ -38,10 +38,10 @@
     "rimraf": "^5.0.0"
   },
   "devDependencies": {
+    "@jest/globals": "^29.5.0",
     "@pixdif/html-reporter": "^0.3.2",
     "@pixdif/pdf-parser": "^0.2.0",
     "@types/glob": "^8.1.0",
-    "@types/jest": "^29.5.1",
     "@types/node": "^18.16.3",
     "@types/pixelmatch": "^5.2.4",
     "@types/pngjs": "^6.0.1",

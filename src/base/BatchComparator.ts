@@ -5,13 +5,11 @@ import { EventEmitter } from 'events';
 import {
 	Progress,
 	TestCase,
-	TestPoint,
 	TestStatus,
 } from '@pixdif/model';
 
 import Comparator from './Comparator';
 import TestReport from './TestReport';
-import parse from '../util/parse';
 
 interface BatchOptions {
 	/**

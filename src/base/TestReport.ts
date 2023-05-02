@@ -7,7 +7,12 @@ import {
 } from '@pixdif/model';
 
 function loadReportWriter(format: string): TestReportWriter {
-	// eslint-disable-next-line import/no-dynamic-require, global-require
+	/*
+		eslint-disable-next-line
+		import/no-dynamic-require,
+		global-require,
+		@typescript-eslint/no-var-requires
+	*/
 	const reporter = require(format);
 	return reporter.default || reporter;
 }
