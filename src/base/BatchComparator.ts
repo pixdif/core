@@ -11,7 +11,7 @@ import {
 import Comparator from './Comparator';
 import TestReport from './TestReport';
 
-interface BatchOptions {
+export interface BatchOptions {
 	/**
 	 * Difference threshold of 2 pixels. Default: 0.001
 	 */
@@ -23,15 +23,15 @@ interface BatchOptions {
 	wsEndpoint?: string;
 }
 
-interface BatchProgress extends Progress {
+export interface BatchProgress extends Progress {
 	testCase: TestCase;
 }
 
-interface BatchCompareProgress extends BatchProgress {
+export interface BatchCompareProgress extends BatchProgress {
 	comparator: Comparator;
 }
 
-interface BatchComparator {
+export interface BatchComparator {
 	on(event: 'started', listener: () => void): this;
 	on(event: 'progress', listener: (progress: BatchProgress) => void): this;
 	on(event: 'comparing', listener: (progress: BatchCompareProgress) => void): this;
@@ -56,7 +56,7 @@ interface BatchComparator {
 /**
  * Compare multiple files in two directories.
  */
-class BatchComparator extends EventEmitter {
+export class BatchComparator extends EventEmitter {
 	protected tasks: TestCase[] = [];
 
 	protected tolerance: number;

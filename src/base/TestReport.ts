@@ -26,7 +26,7 @@ export const enum TestReportFormat {
 	Json = 'json',
 }
 
-export default class TestReport {
+export class TestReport {
 	private title?: string;
 
 	private location: string;
@@ -125,3 +125,5 @@ export default class TestReport {
 		}
 	}
 }
+
+export default TestReport;
