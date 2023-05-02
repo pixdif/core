@@ -5,6 +5,7 @@ import { TestStatus } from '@pixdif/model';
 import BatchComparator from '../../src/base/BatchComparator';
 import type TestReport from '../../src/base/TestReport';
 
+const sampleDir = 'test/sample';
 const to = 'output/batch';
 const cmp = new BatchComparator(to);
 
@@ -73,16 +74,18 @@ it('compares PDF files', async () => {
 
 it('can correctly show matched pages', () => {
 	const testCase = report.get(0);
+	const imageDir = 'image/shape to shape';
+	const shapeFile = path.normalize('../../test/sample/shape.pdf');
 	expect(testCase).toEqual({
 		name: 'shape to shape',
-		expected: path.normalize('../../test/sample/shape.pdf'),
-		actual: path.normalize('../../test/sample/shape.pdf'),
+		expected: shapeFile,
+		actual: shapeFile,
 		status: TestStatus.Matched,
 		details: [
 			{
-				expected: path.normalize('image/shape to shape/expected/1.png'),
-				diff: path.normalize('image/shape to shape/1.png'),
-				actual: path.normalize('image/shape to shape/actual/1.png'),
+				expected: path.join(imageDir, 'expected/1.png'),
+				diff: path.join(imageDir, '1.png'),
+				actual: path.join(imageDir, 'actual/1.png'),
 				name: 'Page 1',
 				ratio: 0,
 			},
@@ -94,6 +97,7 @@ it('can tell differences', () => {
 	const testCase = report.get(1);
 	expect(testCase?.name).toBe('shape to square');
 	expect(testCase?.status).toBe(TestStatus.Mismatched);
+
 	const details = testCase?.details;
 	expect(details).toHaveLength(1);
 	expect(details?.[0].ratio).toBeGreaterThan(0);
@@ -103,24 +107,68 @@ it('skips comparing if expected file is not found', () => {
 	const testCase = report.get(2);
 	expect(testCase?.name).toBe('expected not found');
 	expect(testCase?.status).toBe(TestStatus.ExpectedNotFound);
+
+	const imageDir = 'image/test/sample/expected-not-found';
+	const details = testCase?.details;
+	expect(details).toHaveLength(1);
+	expect(details?.[0]).toEqual({
+		expected: path.join(imageDir, 'expected/1.png'),
+		diff: path.join(imageDir, '1.png'),
+		actual: path.join(imageDir, 'actual/1.png'),
+		name: 'Page 1',
+		ratio: 1,
+	});
 });
 
 it('skips comparing if actual file is not found', () => {
 	const testCase = report.get(3);
 	expect(testCase?.name).toBe('actual not found');
 	expect(testCase?.status).toBe(TestStatus.ActualNotFound);
+
+	const imageDir = 'image/test/sample/actual-not-found';
+	const details = testCase?.details;
+	expect(details).toHaveLength(1);
+	expect(details?.[0]).toEqual({
+		expected: path.join(imageDir, 'expected/1.png'),
+		diff: path.join(imageDir, '1.png'),
+		actual: path.join(imageDir, 'actual/1.png'),
+		name: 'Page 1',
+		ratio: 1,
+	});
 });
 
 it('can handle fewer pages than expected', () => {
 	const testCase = report.get(4);
 	expect(testCase?.name).toBe('fewer pages');
 	expect(testCase?.status).toBe(TestStatus.Mismatched);
+
+	const imageDir = 'image/fewer pages';
+	const details = testCase?.details;
+	expect(details).toHaveLength(2);
+	expect(details?.[1]).toEqual({
+		expected: path.join(imageDir, 'expected/2.png'),
+		diff: path.join(imageDir, '2.png'),
+		actual: path.join(imageDir, 'actual/2.png'),
+		name: 'Page 2',
+		ratio: 1,
+	});
 });
 
 it('can handle more pages than expected', () => {
 	const testCase = report.get(5);
 	expect(testCase?.name).toBe('more pages');
 	expect(testCase?.status).toBe(TestStatus.Mismatched);
+
+	const imageDir = 'image/more pages';
+	const details = testCase?.details;
+	expect(details).toHaveLength(2);
+	expect(details?.[1]).toEqual({
+		expected: path.join(imageDir, 'expected/2.png'),
+		diff: path.join(imageDir, '2.png'),
+		actual: path.join(imageDir, 'actual/2.png'),
+		name: 'Page 2',
+		ratio: 1,
+	});
 });
 
 it('generates a report', async () => {

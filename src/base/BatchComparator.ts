@@ -5,11 +5,13 @@ import { EventEmitter } from 'events';
 import {
 	Progress,
 	TestCase,
+	TestPoint,
 	TestStatus,
 } from '@pixdif/model';
 
 import Comparator from './Comparator';
 import TestReport from './TestReport';
+import parse from '../util/parse';
 
 interface BatchOptions {
 	/**
@@ -159,26 +161,31 @@ class BatchComparator extends EventEmitter {
 			};
 			this.emit('progress', progress);
 
+			const op = task.path && path.parse(task.path);
+			const imageDir = op ? path.join(reportDir, 'image', op.dir, op.name) : path.join(reportDir, 'image', task.name);
+			const cmp = new Comparator(task.expected, task.actual, {
+				imageDir,
+				cacheDir,
+			});
+
+			// Compare current file
+			this.emit('comparing', {
+				...progress,
+				comparator: cmp,
+			});
+			const details = await cmp.exec();
+
+			// Convert file paths
+			testCase.details = details.map((detail) => ({
+				...detail,
+				expected: detail.expected ? path.relative(reportDir, detail.expected) : detail.expected,
+				actual: detail.actual ? path.relative(reportDir, detail.actual) : detail.actual,
+				diff: detail.diff ? path.relative(reportDir, detail.diff) : detail.diff,
+			}));
+
 			const baselineExists = fs.existsSync(task.expected);
 			const actualExists = fs.existsSync(task.actual);
 			if (baselineExists && actualExists) {
-				const op = task.path && path.parse(task.path);
-				const imageDir = op ? path.join(reportDir, 'image', op.dir, op.name) : path.join(reportDir, 'image', task.name);
-				const cmp = new Comparator(task.expected, task.actual, {
-					imageDir,
-					cacheDir,
-				});
-				this.emit('comparing', {
-					...progress,
-					comparator: cmp,
-				});
-				const details = await cmp.exec();
-				testCase.details = details.map((detail) => ({
-					...detail,
-					expected: detail.expected ? path.relative(reportDir, detail.expected) : detail.expected,
-					actual: detail.actual ? path.relative(reportDir, detail.actual) : detail.actual,
-					diff: detail.diff ? path.relative(reportDir, detail.diff) : detail.diff,
-				}));
 				const matched = details.every(({ ratio }): boolean => ratio <= tolerance);
 				testCase.status = matched ? TestStatus.Matched : TestStatus.Mismatched;
 			} else if (!baselineExists) {

@@ -5,23 +5,15 @@ import { EventEmitter } from 'events';
 import { PassThrough } from 'stream';
 
 import {
-	Progress, TestPoint,
+	Progress,
+	TestPoint,
 } from '@pixdif/model';
 import Parser from '@pixdif/parser';
 
 import compareImage from '../util/compareImage';
 import CacheParser from './CacheParser';
+import parse from '../util/parse';
 import waitFor from '../util/waitFor';
-
-type ParserType = new(filePath: string) => Parser;
-
-function parse(filePath: string): Parser {
-	const ext = path.extname(filePath).substring(1);
-	// eslint-disable-next-line global-require, import/no-dynamic-require
-	const ParserModule = require(`@pixdif/${ext}-parser`);
-	const ParserClass: ParserType = ParserModule.default || ParserModule;
-	return new ParserClass(filePath);
-}
 
 function getImageDir(filePath: string): string {
 	const info = path.parse(filePath);
@@ -83,7 +75,7 @@ class Comparator extends EventEmitter {
 
 	protected imageDir: string;
 
-	protected tasks?: Promise<unknown>[];
+	protected tasks: Promise<unknown>[] = [];
 
 	/**
 	 * Compare if two files are the same
@@ -112,33 +104,130 @@ class Comparator extends EventEmitter {
 	 * Wait until the comparator is not running and all files are written to hard disk.
 	 */
 	async idle(): Promise<void> {
-		if (!this.tasks) {
+		if (this.tasks.length <= 0) {
 			return;
 		}
 		await Promise.all(this.tasks);
-		delete this.tasks;
+		this.tasks = [];
 	}
 
 	/**
 	 * @return Differences of each image
 	 */
 	async exec(): Promise<TestPoint[]> {
-		const {
-			expected,
-			actual,
-			cacheDir,
-			imageDir,
-		} = this;
+		await this.idle();
 
-		const tasks: Promise<unknown>[] = [];
+		// Open expected file
+		const expected = await this.#openExpectedFile();
+		const expectedImageDir = this.#getExpectedImageDir();
+		const expectedPageNum = expected ? await expected.getPageNum() : 0;
+
+		// Prepare directory to save images of actual file
+		const actualImageDir = this.#getActualImageDir();
+		await fsp.mkdir(actualImageDir, { recursive: true });
+
+		// Open actual file
+		const actual = await this.#openActualFile();
+		const actualPageNum = actual ? await actual.getPageNum() : 0;
+
+		// Compare each page
+		const pageNum = Math.max(expectedPageNum, actualPageNum);
+		const details: TestPoint[] = [];
+		for (let i = 1; i <= pageNum; i++) {
+			const index = i - 1;
+			const expectedPath = path.join(expectedImageDir, `${i}.png`);
+			const actualPath = path.join(actualImageDir, `${i}.png`);
+			const diffPath = path.join(this.imageDir, `${i}.png`);
+
+			this.emit(Action.Converting, { current: i, limit: pageNum });
+			const actualPage = index < actualPageNum ? await actual?.getPage(index) : undefined;
+			const actualImage = await actualPage?.getImage();
+
+			// Save the image to hard disk
+			if (actualImage) {
+				const actualImageFile = actualImage.pipe(new PassThrough())
+					.pipe(fs.createWriteStream(actualPath));
+				this.tasks.push(waitFor(actualImageFile, 'close'));
+			}
+
+			const name = actualPage ? actualPage.getTitle() : `Page ${i}`;
+			this.emit(Action.Comparing, { current: i, limit: pageNum });
+			const expectedImage = index < expectedPageNum ? await expected?.getImage(index) : undefined;
+
+			// If both expected and actual exist, compare them
+			const detail = {
+				name,
+				expected: expectedPath,
+				actual: actualPath,
+				diff: diffPath,
+			};
+			let ratio = NaN;
+
+			if (expectedImage && actualImage) {
+				try {
+					const res = await compareImage(expectedImage, actualImage);
+					ratio = res.diff / res.dimension;
+					if (res.diff > 0) {
+						const diffImageFile = res.image.pack().pipe(fs.createWriteStream(diffPath));
+						this.tasks.push(waitFor(diffImageFile, 'close'));
+					}
+				} catch (error) {
+					this.emit(
+						Action.Comparing,
+						{
+							current: i,
+							limit: pageNum,
+							error: (error instanceof Error) ? error : new Error(String(error)),
+						},
+					);
+				}
+			} else {
+				ratio = 1;
+			}
+
+			details.push({
+				...detail,
+				ratio,
+			});
+		}
+
+		return details;
+	}
+
+	/**
+	 * @returns The directory to save images of expected file.
+	 */
+	#getExpectedImageDir(): string {
+		return path.join(this.imageDir, 'expected');
+	}
+
+	/**
+	 * @returns The directory to save images of actual file.
+	 */
+	#getActualImageDir(): string {
+		return path.join(this.imageDir, 'actual');
+	}
+
+	/**
+	 * Open baseline (expected file) and read images.
+	 *
+	 * The images will be cached to speed up further reading actions.
+	 *
+	 * @returns expected images
+	 */
+	async #openExpectedFile(): Promise<CacheParser | undefined> {
+		const { expected } = this;
+		if (!fs.existsSync(expected)) {
+			return;
+		}
 
 		// Read baseline cache meta
 		const baseline = new CacheParser(parse(expected), {
-			cacheDir: path.join(cacheDir, getImageDir(expected)),
+			cacheDir: path.join(this.cacheDir, getImageDir(expected)),
 		});
 
 		// Update image cache if the baseline is updated
-		const expectedImageDir = path.join(imageDir, 'expected');
+		const expectedImageDir = this.#getExpectedImageDir();
 		await fsp.mkdir(expectedImageDir, { recursive: true });
 
 		await baseline.open();
@@ -154,89 +243,30 @@ class Comparator extends EventEmitter {
 			this.emit(Action.Copying, { current: i, limit: expectedPageNum });
 			const from = await baseline.getImage(i - 1);
 			const to = from.pipe(fs.createWriteStream(path.join(expectedImageDir, `${i}.png`)));
-			tasks.push(waitFor(to, 'close'));
+			this.tasks.push(waitFor(to, 'close'));
 
 			if (!validCache) {
 				await baseline.commitCache();
 			}
 		}
 
-		const actualImageDir = path.join(imageDir, 'actual');
-		await fsp.mkdir(actualImageDir, { recursive: true });
+		return baseline;
+	}
 
-		const details: TestPoint[] = [];
-		const target = parse(actual);
-		await target.open();
-		const actualPageNum = await target.getPageNum();
-		const pageNum = Math.min(expectedPageNum, actualPageNum);
-
-		for (let i = 1; i <= pageNum; i++) {
-			const expectedPath = path.join(expectedImageDir, `${i}.png`);
-			const actualPath = path.join(actualImageDir, `${i}.png`);
-			const diffPath = path.join(imageDir, `${i}.png`);
-
-			this.emit(Action.Converting, { current: i, limit: pageNum });
-			const actualPage = await target.getPage(i - 1);
-			if (!actualPage) {
-				throw new Error(`Failed to read page ${i}`);
-			}
-			const name = actualPage.getTitle();
-
-			const actualImage = await actualPage.getImage();
-			const actualImageFile = actualImage.pipe(new PassThrough())
-				.pipe(fs.createWriteStream(actualPath));
-			tasks.push(waitFor(actualImageFile, 'close'));
-
-			this.emit(Action.Comparing, { current: i, limit: pageNum });
-			const expectedImage = await baseline.getImage(i - 1);
-			try {
-				const res = await compareImage(expectedImage, actualImage);
-				const ratio = res.diff / res.dimension;
-				details.push({
-					name,
-					expected: expectedPath,
-					actual: actualPath,
-					diff: diffPath,
-					ratio,
-				});
-				if (res.diff > 0) {
-					const diffImageFile = res.image.pack().pipe(fs.createWriteStream(diffPath));
-					tasks.push(waitFor(diffImageFile, 'close'));
-				}
-			} catch (error) {
-				this.emit(
-					Action.Comparing,
-					{
-						current: i,
-						limit: pageNum,
-						error: (error instanceof Error) ? error : new Error(String(error)),
-					},
-				);
-				details.push({
-					name,
-					expected: expectedPath,
-					actual: '',
-					ratio: NaN,
-				});
-			}
+	/**
+	 * Open actual output and read images.
+	 *
+	 * @returns parser of actual output
+	 */
+	async #openActualFile(): Promise<Parser | undefined> {
+		const { actual } = this;
+		if (!fs.existsSync(actual)) {
+			return;
 		}
 
-		if (expectedPageNum !== actualPageNum) {
-			// Mark lost pages. The difference should be 100%
-			const start = Math.min(expectedPageNum, actualPageNum) + 1;
-			const end = Math.max(expectedPageNum, actualPageNum);
-			for (let i = start; i <= end; i++) {
-				details.push({
-					name: `Page ${i}`,
-					expected: path.join(expectedImageDir, `${i}.png`),
-					actual: path.join(actualImageDir, `${i}.png`),
-					ratio: 1,
-				});
-			}
-		}
-
-		this.tasks = tasks;
-		return details;
+		const parser = parse(actual);
+		await parser.open();
+		return parser;
 	}
 }
 
