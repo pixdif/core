@@ -1,7 +1,7 @@
 {
   "name": "@pixdif/core",
   "version": "0.2.0",
-  "description": "Core Libraries of PixDif",
+  "description": "Core Library of Pixdif",
   "main": "dist",
   "scripts": {
     "build": "tsc",
@@ -26,9 +26,6 @@
     "url": "https://github.com/pixdif/core/issues"
   },
   "homepage": "https://github.com/pixdif/core#readme",
-  "files": [
-    "dist"
-  ],
   "dependencies": {
     "@pixdif/model": "^0.6.0",
     "@pixdif/parser": "^0.4.0",
