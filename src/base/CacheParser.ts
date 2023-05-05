@@ -1,10 +1,7 @@
 import fs from 'fs';
 import fsp from 'fs/promises';
 import path from 'path';
-import {
-	Readable,
-	PassThrough,
-} from 'stream';
+import { Readable } from 'stream';
 
 import { rimraf } from 'rimraf';
 import Parser from '@pixdif/parser';
@@ -58,7 +55,7 @@ export default class CacheParser {
 	}
 
 	getFingerprint(): Promise<string> {
-		return this.parser.getFingerprint();
+		return this.parser.getFingerprint({ encoding: 'base64' });
 	}
 
 	async getImage(index: number): Promise<Readable> {
@@ -75,11 +72,11 @@ export default class CacheParser {
 			throw new Error(`Failed to read page ${index}`);
 		}
 
-		const image = await page.getImage();
-		const dup = image.pipe(new PassThrough());
-		const cache = image.pipe(new PassThrough()).pipe(fs.createWriteStream(imageCachePath));
+		const image = await page.render();
+		const cache = fs.createWriteStream(imageCachePath);
+		image.pipe(cache);
 		await waitFor(cache, 'finish');
-		return dup;
+		return fs.createReadStream(imageCachePath);
 	}
 
 	async commitCache(): Promise<void> {

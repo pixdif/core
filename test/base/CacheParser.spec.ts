@@ -59,7 +59,8 @@ describe('Error Cases', () => {
 
 		await parser.open();
 		expect(parser.isValid()).toBe(true);
-		await parser.getImage(0);
+		const img = await parser.getImage(0);
+		img.destroy();
 	});
 
 	it('does nothing if fingerprint is not changed', async () => {
@@ -69,8 +70,15 @@ describe('Error Cases', () => {
 		writeFile.mockRestore();
 	});
 
-	it('clear cache twice', async () => {
+	it('close cache', async () => {
+		await parser.close();
+	});
+
+	it('clear cache', async () => {
 		await parser.clearCache();
+	});
+
+	it('clear cache twice', async () => {
 		await parser.clearCache();
 	});
 });

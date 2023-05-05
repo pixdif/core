@@ -141,7 +141,7 @@ class Comparator extends EventEmitter {
 
 			this.emit(Action.Converting, { current: i, limit: pageNum });
 			const actualPage = index < actualPageNum ? await actual?.getPage(index) : undefined;
-			const actualImage = await actualPage?.getImage();
+			const actualImage = await actualPage?.render();
 
 			// Save the image to hard disk
 			if (actualImage) {
