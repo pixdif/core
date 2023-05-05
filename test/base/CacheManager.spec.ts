@@ -9,7 +9,7 @@ import fsp from 'fs/promises';
 import path from 'path';
 import PdfParser from '@pixdif/pdf-parser';
 
-import CacheParser from '../../src/base/CacheParser';
+import CacheManager from '../../src/base/CacheManager';
 import compareImage from '../../src/util/compareImage';
 
 const cacheDir = 'output/cache/test/sample/shape';
@@ -17,7 +17,7 @@ const filePath = 'test/sample/shape.pdf';
 
 describe('Normal Cases', () => {
 	const pdf = new PdfParser(filePath);
-	const parser = new CacheParser(pdf, { cacheDir });
+	const parser = new CacheManager(pdf, { cacheDir });
 
 	beforeAll(async () => {
 		await parser.clearCache();
@@ -44,7 +44,7 @@ describe('Normal Cases', () => {
 
 describe('Error Cases', () => {
 	const pdf = new PdfParser(filePath);
-	const parser = new CacheParser(pdf, { cacheDir });
+	const parser = new CacheManager(pdf, { cacheDir });
 
 	it('returns invalid cache if not open', () => {
 		expect(parser.isValid()).toBe(false);

@@ -11,7 +11,7 @@ import {
 import Parser from '@pixdif/parser';
 
 import compareImage from '../util/compareImage';
-import CacheParser from './CacheParser';
+import CacheManager from './CacheManager';
 import parse from '../util/parse';
 import waitFor from '../util/waitFor';
 
@@ -215,14 +215,14 @@ export class Comparator extends EventEmitter {
 	 *
 	 * @returns expected images
 	 */
-	async #openExpectedFile(): Promise<CacheParser | undefined> {
+	async #openExpectedFile(): Promise<CacheManager | undefined> {
 		const { expected } = this;
 		if (!fs.existsSync(expected)) {
 			return;
 		}
 
 		// Read baseline cache meta
-		const baseline = new CacheParser(parse(expected), {
+		const baseline = new CacheManager(parse(expected), {
 			cacheDir: path.join(this.cacheDir, getImageDir(expected)),
 		});
 

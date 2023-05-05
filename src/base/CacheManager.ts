@@ -13,18 +13,18 @@ interface CacheMeta {
 	fingerprint?: string;
 }
 
-export interface CacheParserOptions {
+export interface CacheOptions {
 	cacheDir: string;
 }
 
-export default class CacheParser {
+export default class CacheManager {
 	protected parser: Parser;
 
 	protected cacheDir: string;
 
 	protected cacheMeta?: CacheMeta;
 
-	constructor(parser: Parser, options: CacheParserOptions) {
+	constructor(parser: Parser, options: CacheOptions) {
 		this.parser = parser;
 		this.cacheDir = options.cacheDir;
 	}
