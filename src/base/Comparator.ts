@@ -55,7 +55,7 @@ export interface ComparisonOptions {
 	imageDir?: string;
 }
 
-interface Comparator {
+export interface Comparator {
 	on(event: Action, listener: (progress: Progress) => void): this;
 	once(event: Action, listener: (progress: Progress) => void): this;
 	off(event: Action, listener: (progress: Progress) => void): this;
@@ -66,7 +66,7 @@ interface Comparator {
  * A comparator between two files or directories.
  * The file / directory may contain multiple images inside.
  */
-class Comparator extends EventEmitter {
+export class Comparator extends EventEmitter {
 	protected readonly expected: string;
 
 	protected readonly actual: string;
