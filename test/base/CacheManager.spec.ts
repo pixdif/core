@@ -5,8 +5,7 @@ import {
 	it,
 	jest,
 } from '@jest/globals';
-import fsp from 'fs/promises';
-import path from 'path';
+import { Progress } from '@pixdif/model';
 import PdfParser from '@pixdif/pdf-parser';
 
 import CacheManager from '../../src/base/CacheManager';
@@ -15,70 +14,61 @@ import compareImage from '../../src/util/compareImage';
 const cacheDir = 'output/cache/test/sample/shape';
 const filePath = 'test/sample/shape.pdf';
 
-describe('Normal Cases', () => {
+describe('Create Cache', () => {
 	const pdf = new PdfParser(filePath);
 	const parser = new CacheManager(pdf, { cacheDir });
+	const getPage = jest.spyOn(pdf, 'getPage');
 
 	beforeAll(async () => {
 		await parser.clearCache();
 	});
 
-	it('opens a PDF file', async () => {
+	it('generates cache', async () => {
+		const onProgress = jest.fn<(progress: Progress) => void>();
+		parser.on('progress', onProgress);
 		await parser.open();
-		expect(await parser.getPageNum()).toBe(1);
+		expect(parser.getPageNum()).toBe(1);
+		expect(getPage).toBeCalledTimes(1);
+		getPage.mockClear();
+		expect(onProgress).toBeCalledWith({ current: 1, limit: 1 });
 	});
 
-	it('generates cache', async () => {
-		const getPage = jest.spyOn(pdf, 'getPage');
-		const image1 = await parser.getImage(0);
-		await parser.commitCache();
-
-		const image2 = await parser.getImage(0);
-		expect(getPage).toBeCalledTimes(1);
-		expect(getPage).toBeCalledWith(0);
+	it('reads cache', async () => {
+		const image1 = parser.getImage(0);
+		const image2 = parser.getImage(0);
+		expect(getPage).toBeCalledTimes(0);
 
 		const cmp = await compareImage(image1, image2);
 		expect(cmp.diff).toBe(0);
 	});
 });
 
-describe('Error Cases', () => {
+describe('Reuse Cache', () => {
 	const pdf = new PdfParser(filePath);
 	const parser = new CacheManager(pdf, { cacheDir });
+	const getPage = jest.spyOn(pdf, 'getPage');
 
-	it('returns invalid cache if not open', () => {
-		expect(parser.isValid()).toBe(false);
-	});
-
-	it('cannot commit cache without data', async () => {
-		await expect(() => parser.commitCache()).rejects.toThrowError('There is no data to commit.');
-	});
-
-	it('can re-generate an image if it is deleted by mistake', async () => {
-		await fsp.unlink(path.join(cacheDir, '0.png'));
-
+	it('does not fire progress', async () => {
+		const onProgress = jest.fn<(progress: Progress) => void>();
+		parser.on('progress', onProgress);
 		await parser.open();
-		expect(parser.isValid()).toBe(true);
-		const img = await parser.getImage(0);
-		img.destroy();
+		expect(onProgress).not.toBeCalled();
 	});
 
-	it('does nothing if fingerprint is not changed', async () => {
-		const writeFile = jest.spyOn(fsp, 'writeFile');
-		await parser.commitCache();
-		expect(writeFile).toBeCalledTimes(0);
-		writeFile.mockRestore();
+	it('reads cache', async () => {
+		const image1 = parser.getImage(0);
+		const image2 = parser.getImage(0);
+		expect(getPage).toBeCalledTimes(0);
+
+		const cmp = await compareImage(image1, image2);
+		expect(cmp.diff).toBe(0);
 	});
 
-	it('close cache', async () => {
-		await parser.close();
-	});
-
-	it('clear cache', async () => {
+	it('clears cache', async () => {
 		await parser.clearCache();
 	});
 
-	it('clear cache twice', async () => {
+	it('clears cache twice', async () => {
 		await parser.clearCache();
 	});
 });

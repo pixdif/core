@@ -152,7 +152,7 @@ export class Comparator extends EventEmitter {
 
 			const name = actualPage ? actualPage.getTitle() : `Page ${i}`;
 			this.emit(Action.Comparing, { current: i, limit: pageNum });
-			const expectedImage = index < expectedPageNum ? await expected?.getImage(index) : undefined;
+			const expectedImage = index < expectedPageNum ? expected?.getImage(index) : undefined;
 
 			// If both expected and actual exist, compare them
 			const detail = {
@@ -230,24 +230,18 @@ export class Comparator extends EventEmitter {
 		const expectedImageDir = this.#getExpectedImageDir();
 		await fsp.mkdir(expectedImageDir, { recursive: true });
 
+		baseline.on('progress', (progress) => {
+			this.emit(Action.Preparing, progress);
+		});
 		await baseline.open();
-		const expectedPageNum = await baseline.getPageNum();
-		const validCache = baseline.isValid();
-		for (let i = 1; i <= expectedPageNum; i++) {
-			if (!validCache) {
-				this.emit(Action.Preparing, {
-					current: i,
-					limit: expectedPageNum,
-				});
-			}
-			this.emit(Action.Copying, { current: i, limit: expectedPageNum });
-			const from = await baseline.getImage(i - 1);
-			const to = from.pipe(fs.createWriteStream(path.join(expectedImageDir, `${i}.png`)));
-			this.tasks.push(waitFor(to, 'close'));
 
-			if (!validCache) {
-				await baseline.commitCache();
-			}
+		const expectedPageNum = baseline.getPageNum();
+		for (let i = 1; i <= expectedPageNum; i++) {
+			this.emit(Action.Copying, { current: i, limit: expectedPageNum });
+			const from = baseline.getImage(i - 1);
+			const to = fs.createWriteStream(path.join(expectedImageDir, `${i}.png`));
+			from.pipe(to);
+			this.tasks.push(waitFor(to, 'close'));
 		}
 
 		return baseline;
