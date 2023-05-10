@@ -5,8 +5,14 @@ import {
 	it,
 	jest,
 } from '@jest/globals';
+
+import fs from 'fs';
+import fsp from 'fs/promises';
+import path from 'path';
+
 import { Progress } from '@pixdif/model';
 import PdfParser from '@pixdif/pdf-parser';
+import PngParser from '@pixdif/png-parser';
 
 import CacheManager from '../../src/base/CacheManager';
 import compareImage from '../../src/util/compareImage';
@@ -63,6 +69,21 @@ describe('Reuse Cache', () => {
 		const cmp = await compareImage(image1, image2);
 		expect(cmp.diff).toBe(0);
 	});
+});
+
+describe('Update Cache', () => {
+	const pdf = new PdfParser(filePath);
+	const parser = new CacheManager(pdf, { cacheDir });
+
+	it('generates an invalid meta', async () => {
+		await fsp.writeFile(path.join(cacheDir, '.meta'), '{}');
+	});
+
+	it('updates cache', async () => {
+		expect(parser.getPageNum()).toBe(0);
+		await parser.open();
+		expect(parser.getPageNum()).toBe(1);
+	});
 
 	it('clears cache', async () => {
 		await parser.clearCache();
@@ -70,5 +91,24 @@ describe('Reuse Cache', () => {
 
 	it('clears cache twice', async () => {
 		await parser.clearCache();
+	});
+});
+
+describe('PNG Cache', () => {
+	const png = new PngParser('test/sample/circle.png');
+	const cm = new CacheManager(png, { cacheDir: 'output/cache/png' });
+
+	it('cleans cache', async () => {
+		await cm.clearCache();
+	});
+
+	it('reads image', async () => {
+		await cm.open();
+		const img = cm.getImage(0);
+		expect(img.readable).toBe(true);
+	});
+
+	it('generates cache', () => {
+		expect(fs.existsSync('output/cache/png/0.png')).toBe(true);
 	});
 });

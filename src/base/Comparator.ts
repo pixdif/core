@@ -120,7 +120,7 @@ export class Comparator extends EventEmitter {
 		// Open expected file
 		const expected = await this.#openExpectedFile();
 		const expectedImageDir = this.#getExpectedImageDir();
-		const expectedPageNum = expected ? await expected.getPageNum() : 0;
+		const expectedPageNum = expected ? expected.getPageNum() : 0;
 
 		// Prepare directory to save images of actual file
 		const actualImageDir = this.#getActualImageDir();

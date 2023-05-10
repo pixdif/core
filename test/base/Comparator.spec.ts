@@ -45,6 +45,20 @@ it('compares 2 different PDF files', async () => {
 	expect(diffImage.height).toBe(600);
 }, 20 * 1000);
 
+it('compres 2 different PNG images', async () => {
+	const imageDir = 'output/cmp-image';
+	if (fs.existsSync(imageDir)) {
+		await rimraf(imageDir);
+	}
+
+	const cmp = new Comparator('test/sample/shapes-a.png', 'test/sample/shapes-b.png', {
+		imageDir,
+	});
+	const diff = await cmp.exec();
+	expect(diff).toHaveLength(1);
+	expect(diff[0].ratio).toBeGreaterThan(0);
+});
+
 it('compares unsupported files', async () => {
 	const script = 'test/base/Comparator.spec.ts';
 	await expect(() => compare(script, script)).rejects.toThrowError(`Failed to parse ${script}. Please install @pixdif/ts-parser and try again.`);

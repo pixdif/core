@@ -122,10 +122,6 @@ class CacheManager extends EventEmitter {
 
 	protected async createPageCache(i: number): Promise<fs.WriteStream | undefined> {
 		const page = await this.parser.getPage(i);
-		if (page.isCached()) {
-			return;
-		}
-
 		const image = await page.render();
 		const cache = fs.createWriteStream(this.getImagePath(i));
 		image.pipe(cache);
