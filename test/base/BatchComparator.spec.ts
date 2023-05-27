@@ -100,6 +100,9 @@ it('can correctly show matched pages', () => {
 it('can tell differences', () => {
 	const testCase = report.get(1);
 	expect(testCase?.name).toBe('shape to square');
+	expect(testCase?.path).toBe(path.normalize('../../test/sample/shape-to-square.yaml'));
+	expect(testCase?.expected).toBe(path.normalize('../../test/sample/shape.pdf'));
+	expect(testCase?.actual).toBe(path.normalize('../../test/sample/square.pdf'));
 	expect(testCase?.status).toBe(TestStatus.Mismatched);
 
 	const details = testCase?.details;

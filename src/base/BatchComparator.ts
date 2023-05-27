@@ -23,6 +23,8 @@ export interface BatchOptions {
 	wsEndpoint?: string;
 }
 
+export type BatchTask = Omit<TestCase, 'status' | 'details'>;
+
 export interface BatchProgress extends Progress {
 	testCase: TestCase;
 }
@@ -57,7 +59,7 @@ export interface BatchComparator {
  * Compare multiple files in two directories.
  */
 export class BatchComparator extends EventEmitter {
-	protected tasks: TestCase[] = [];
+	protected tasks: Readonly<BatchTask>[] = [];
 
 	protected tolerance: number;
 
@@ -103,7 +105,7 @@ export class BatchComparator extends EventEmitter {
 	 * Add a new task.
 	 * @param task batch task
 	 */
-	addTask(task: TestCase): void {
+	addTask(task: Readonly<BatchTask>): void {
 		this.tasks.push(task);
 	}
 
@@ -145,10 +147,7 @@ export class BatchComparator extends EventEmitter {
 			this.progress++;
 
 			const testCase: TestCase = {
-				name: task.name,
-				path: task.path,
-				expected: path.relative(reportDir, task.expected),
-				actual: path.relative(reportDir, task.actual),
+				...task,
 				status: TestStatus.Unexecuted,
 			};
 
@@ -174,12 +173,7 @@ export class BatchComparator extends EventEmitter {
 			const details = await cmp.exec();
 
 			// Convert file paths
-			testCase.details = details.map((detail) => ({
-				...detail,
-				expected: detail.expected ? path.relative(reportDir, detail.expected) : detail.expected,
-				actual: detail.actual ? path.relative(reportDir, detail.actual) : detail.actual,
-				diff: detail.diff ? path.relative(reportDir, detail.diff) : detail.diff,
-			}));
+			testCase.details = details;
 
 			const baselineExists = fs.existsSync(task.expected);
 			const actualExists = fs.existsSync(task.actual);

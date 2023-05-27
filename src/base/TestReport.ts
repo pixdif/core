@@ -2,9 +2,11 @@ import fsp from 'fs/promises';
 import {
 	Config,
 	TestCase,
+	TestPoint,
 	TestReport as TestReportModel,
 	TestReportWriter,
 } from '@pixdif/model';
+import path from 'path';
 
 function loadReportWriter(format: string): TestReportWriter {
 	/*
@@ -37,10 +39,33 @@ export class TestReport {
 
 	private testCases: TestCase[];
 
-	constructor(location: string, config: Config, testCases: TestCase[] = []) {
+	constructor(location: string, config: Config, testCases: Readonly<TestCase>[] = []) {
 		this.location = location;
 		this.config = config;
-		this.testCases = testCases;
+		this.testCases = testCases.map((testCase) => this.#resolveTestCase(testCase));
+	}
+
+	#resolveTestCase(from: Readonly<TestCase>): TestCase {
+		return {
+			...from,
+			path: from.path && this.#resolvePath(from.path),
+			expected: this.#resolvePath(from.expected),
+			actual: this.#resolvePath(from.actual),
+			details: from.details?.map((detail) => this.#resolveTestPoint(detail)),
+		};
+	}
+
+	#resolveTestPoint(from: Readonly<TestPoint>): TestPoint {
+		return {
+			...from,
+			expected: this.#resolvePath(from.expected),
+			actual: this.#resolvePath(from.actual),
+			diff: from.diff && this.#resolvePath(from.diff),
+		};
+	}
+
+	#resolvePath(filePath: string): string {
+		return filePath ? path.relative(this.location, filePath) : filePath;
 	}
 
 	/**
