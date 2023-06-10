@@ -8,6 +8,7 @@ import {
 	TestStatus,
 } from '@pixdif/model';
 
+import type BatchTask from './BatchTask';
 import Comparator from './Comparator';
 import TestReport from './TestReport';
 
@@ -22,8 +23,6 @@ export interface BatchOptions {
 	 */
 	wsEndpoint?: string;
 }
-
-export type BatchTask = Omit<TestCase, 'status' | 'details'>;
 
 export interface BatchProgress extends Progress {
 	testCase: TestCase;
@@ -105,7 +104,7 @@ export class BatchComparator extends EventEmitter {
 	 * Add a new task.
 	 * @param task batch task
 	 */
-	addTask(task: Readonly<BatchTask>): void {
+	addTask(task: BatchTask): void {
 		this.tasks.push(task);
 	}
 
@@ -147,7 +146,12 @@ export class BatchComparator extends EventEmitter {
 			this.progress++;
 
 			const testCase: TestCase = {
-				...task,
+				name: task.getName(),
+				path: task.getPath(),
+				expected: task.getExpected(),
+				actual: task.getActual(),
+				executionTime: task.getExecutionTime(),
+				comment: task.getComment(),
 				status: TestStatus.Unexecuted,
 			};
 
@@ -158,9 +162,8 @@ export class BatchComparator extends EventEmitter {
 			};
 			this.emit('progress', progress);
 
-			const op = task.path && path.parse(task.path);
-			const imageDir = op ? path.join(reportDir, 'image', op.dir, op.name) : path.join(reportDir, 'image', task.name);
-			const cmp = new Comparator(task.expected, task.actual, {
+			const imageDir = path.join(reportDir, 'image', task.getUniqueDir());
+			const cmp = new Comparator(task.getExpected(), task.getActual(), {
 				imageDir,
 				cacheDir,
 			});
@@ -175,8 +178,8 @@ export class BatchComparator extends EventEmitter {
 			// Convert file paths
 			testCase.details = details;
 
-			const baselineExists = fs.existsSync(task.expected);
-			const actualExists = fs.existsSync(task.actual);
+			const baselineExists = fs.existsSync(task.getExpected());
+			const actualExists = fs.existsSync(task.getActual());
 			if (baselineExists && actualExists) {
 				const matched = details.every(({ ratio }): boolean => ratio <= tolerance);
 				testCase.status = matched ? TestStatus.Matched : TestStatus.Mismatched;

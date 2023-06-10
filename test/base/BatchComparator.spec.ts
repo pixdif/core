@@ -9,6 +9,7 @@ import { TestStatus } from '@pixdif/model';
 
 import BatchComparator from '../../src/base/BatchComparator';
 import type TestReport from '../../src/base/TestReport';
+import BatchTask from '../../src/base/BatchTask';
 
 const to = 'output/batch';
 const cmp = new BatchComparator(to);
@@ -35,39 +36,39 @@ it('cannot execute 0 tasks', async () => {
 });
 
 it('adds tasks', async () => {
-	cmp.addTask({
+	cmp.addTask(new BatchTask({
 		name: 'shape to shape',
 		expected: 'test/sample/shape.pdf',
 		actual: 'test/sample/shape.pdf',
-	});
-	cmp.addTask({
+	}));
+	cmp.addTask(new BatchTask({
 		name: 'shape to square',
 		path: 'test/sample/shape-to-square.yaml',
 		expected: 'test/sample/shape.pdf',
 		actual: 'test/sample/square.pdf',
-	});
-	cmp.addTask({
+	}));
+	cmp.addTask(new BatchTask({
 		name: 'expected not found',
 		path: 'test/sample/expected-not-found.yaml',
 		expected: 'test/sample/not-found.pdf',
 		actual: 'test/sample/square.pdf',
-	});
-	cmp.addTask({
+	}));
+	cmp.addTask(new BatchTask({
 		name: 'actual not found',
 		path: 'test/sample/actual-not-found.yaml',
 		expected: 'test/sample/shape.pdf',
 		actual: 'test/sample/not-found.pdf',
-	});
-	cmp.addTask({
+	}));
+	cmp.addTask(new BatchTask({
 		name: 'fewer pages',
 		expected: 'test/sample/logo.pdf',
 		actual: 'test/sample/shape.pdf',
-	});
-	cmp.addTask({
+	}));
+	cmp.addTask(new BatchTask({
 		name: 'more pages',
 		expected: 'test/sample/square.pdf',
 		actual: 'test/sample/logo.pdf',
-	});
+	}));
 });
 
 let report: TestReport;
