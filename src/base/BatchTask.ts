@@ -1,68 +1,69 @@
+import fs from 'fs';
 import path from 'path';
-import { TestCase } from '@pixdif/model';
+import { EventEmitter } from 'stream';
+import { TestCase, TestStatus } from '@pixdif/model';
+
+import Comparator, { ComparisonOptions } from './Comparator';
 
 export type BatchTaskProps = Omit<TestCase, 'status' | 'details'>;
 
-export class BatchTask {
-	protected readonly name: string;
+interface ExecutionOptions extends ComparisonOptions {
+	tolerance: number;
+}
 
-	protected readonly path?: string | undefined;
+export interface BatchTask {
+	on(event: 'started', listener: (cmp: Comparator) => void): this;
+	on(event: 'stopped', listener: () => void): this;
 
-	protected readonly expected: string;
+	once(event: 'started', listener: (cmp: Comparator) => void): this;
+	once(event: 'stopped', listener: () => void): this;
 
-	protected readonly actual: string;
+	off(event: 'started', listener: (cmp: Comparator) => void): this;
+	off(event: 'stopped', listener: () => void): this;
 
-	protected executionTime?: number | undefined;
+	emit(event: 'started', cmp: Comparator): boolean;
+	emit(event: 'stopped'): boolean;
+}
 
-	protected comment?: string | undefined;
+export class BatchTask extends EventEmitter {
+	protected readonly testCase: TestCase;
 
 	constructor(props: BatchTaskProps) {
-		this.name = props.name;
-		this.path = props.path;
-		this.expected = props.expected;
-		this.actual = props.actual;
-		this.executionTime = props.executionTime;
-		this.comment = props.comment;
+		super();
+		this.testCase = { ...props };
 	}
 
-	getName(): string {
-		return this.name;
-	}
-
-	getPath(): string | undefined {
-		return this.path;
+	getTestCase(): TestCase {
+		return this.testCase;
 	}
 
 	getUniqueDir(): string {
-		if (this.path) {
-			const { dir, name } = path.parse(this.path);
+		if (this.testCase.path) {
+			const { dir, name } = path.parse(this.testCase.path);
 			return path.join(dir, name);
 		}
-		return this.name;
+		return this.testCase.name;
 	}
 
-	getExpected(): string {
-		return this.expected;
-	}
+	async exec(options: ExecutionOptions): Promise<void> {
+		const { expected, actual } = this.testCase;
+		const cmp = new Comparator(expected, actual, options);
 
-	getActual(): string {
-		return this.actual;
-	}
+		this.emit('started', cmp);
+		const details = await cmp.exec();
+		this.testCase.details = details;
 
-	getExecutionTime(): number | undefined {
-		return this.executionTime;
-	}
-
-	setExecutionTime(time: number): void {
-		this.executionTime = time;
-	}
-
-	getComment(): string | undefined {
-		return this.comment;
-	}
-
-	setComment(comment: string): void {
-		this.comment = comment;
+		const baselineExists = fs.existsSync(expected);
+		const actualExists = fs.existsSync(actual);
+		if (baselineExists && actualExists) {
+			const matched = details.every(({ ratio }): boolean => ratio <= options.tolerance);
+			this.testCase.status = matched ? TestStatus.Matched : TestStatus.Mismatched;
+		} else if (!baselineExists) {
+			this.testCase.status = TestStatus.ExpectedNotFound;
+		} else {
+			this.testCase.status = TestStatus.ActualNotFound;
+		}
+		this.emit('stopped');
 	}
 }
 

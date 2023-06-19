@@ -1,11 +1,9 @@
-import fs from 'fs';
 import path from 'path';
 import { EventEmitter } from 'events';
 
 import {
 	Progress,
 	TestCase,
-	TestStatus,
 } from '@pixdif/model';
 
 import type BatchTask from './BatchTask';
@@ -145,52 +143,28 @@ export class BatchComparator extends EventEmitter {
 		for (const task of this.tasks) {
 			this.progress++;
 
-			const testCase: TestCase = {
-				name: task.getName(),
-				path: task.getPath(),
-				expected: task.getExpected(),
-				actual: task.getActual(),
-				executionTime: task.getExecutionTime(),
-				comment: task.getComment(),
-				status: TestStatus.Unexecuted,
-			};
-
 			const progress: BatchProgress = {
-				testCase,
+				testCase: task.getTestCase(),
 				current: this.progress,
 				limit,
 			};
 			this.emit('progress', progress);
 
-			const imageDir = path.join(reportDir, 'image', task.getUniqueDir());
-			const cmp = new Comparator(task.getExpected(), task.getActual(), {
-				imageDir,
+			task.once('started', (comparator) => {
+				this.emit('comparing', {
+					...progress,
+					comparator,
+				});
+			});
+
+			await task.exec({
+				imageDir: path.join(reportDir, 'image', task.getUniqueDir()),
 				cacheDir,
+				tolerance,
 			});
-
-			// Compare current file
-			this.emit('comparing', {
-				...progress,
-				comparator: cmp,
-			});
-			const details = await cmp.exec();
-
-			// Convert file paths
-			testCase.details = details;
-
-			const baselineExists = fs.existsSync(task.getExpected());
-			const actualExists = fs.existsSync(task.getActual());
-			if (baselineExists && actualExists) {
-				const matched = details.every(({ ratio }): boolean => ratio <= tolerance);
-				testCase.status = matched ? TestStatus.Matched : TestStatus.Mismatched;
-			} else if (!baselineExists) {
-				testCase.status = TestStatus.ExpectedNotFound;
-			} else {
-				testCase.status = TestStatus.ActualNotFound;
-			}
 
 			this.emit('progress', progress);
-			testCases.push(testCase);
+			testCases.push(task.getTestCase());
 		}
 
 		this.emit('stopped');
