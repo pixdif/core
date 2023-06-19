@@ -1,14 +1,17 @@
 import fs from 'fs';
+import fsp from 'fs/promises';
 import path from 'path';
 import { EventEmitter } from 'stream';
 import { TestCase, TestStatus } from '@pixdif/model';
 
-import Comparator, { ComparisonOptions } from './Comparator';
+import Comparator from './Comparator';
 
 export type BatchTaskProps = Omit<TestCase, 'status' | 'details'>;
 
-interface ExecutionOptions extends ComparisonOptions {
+interface ExecutionOptions {
+	reportDir: string;
 	tolerance: number;
+	cacheDir?: string;
 }
 
 export interface BatchTask {
@@ -47,7 +50,11 @@ export class BatchTask extends EventEmitter {
 
 	async exec(options: ExecutionOptions): Promise<void> {
 		const { expected, actual } = this.testCase;
-		const cmp = new Comparator(expected, actual, options);
+		const dataDir = path.join(options.reportDir, 'data', this.getUniqueDir());
+		const cmp = new Comparator(expected, actual, {
+			imageDir: dataDir,
+			cacheDir: options.cacheDir,
+		});
 
 		this.emit('started', cmp);
 		const details = await cmp.exec();
@@ -63,6 +70,7 @@ export class BatchTask extends EventEmitter {
 		} else {
 			this.testCase.status = TestStatus.ActualNotFound;
 		}
+		await fsp.writeFile(path.join(dataDir, 'test-case.pixdif.json'), JSON.stringify(this.testCase));
 		this.emit('stopped');
 	}
 }

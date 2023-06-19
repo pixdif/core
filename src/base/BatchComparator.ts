@@ -1,4 +1,3 @@
-import path from 'path';
 import { EventEmitter } from 'events';
 
 import {
@@ -158,7 +157,7 @@ export class BatchComparator extends EventEmitter {
 			});
 
 			await task.exec({
-				imageDir: path.join(reportDir, 'image', task.getUniqueDir()),
+				reportDir,
 				cacheDir,
 				tolerance,
 			});
