@@ -28,7 +28,8 @@
   "homepage": "https://github.com/pixdif/pixdif#readme",
   "dependencies": {
     "@pixdif/core": "file:src/core",
-    "@pixdif/model": "file:src/model"
+    "@pixdif/model": "file:src/model",
+    "@pixdif/parser": "file:src/parser"
   },
   "devDependencies": {
     "@pixdif/tests": "file:test",

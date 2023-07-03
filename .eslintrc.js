@@ -42,5 +42,7 @@ module.exports = {
 		'no-shadow': 'off',
 		'no-tabs': 'off',
 		'no-unused-vars': 'off',
+		'no-use-before-define': 'off',
+		'@typescript-eslint/no-use-before-define': 'error',
 	},
 };
