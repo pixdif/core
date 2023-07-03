@@ -1,5 +1,5 @@
 {
-  "name": "@pixdif-tests/core",
+  "name": "@pixdif-tests/parser",
   "version": "0.3.1",
   "description": "Tests of Pixdif",
   "main": "index.js",

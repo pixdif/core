@@ -32,7 +32,11 @@
     "@pixdif/parser": "file:src/parser"
   },
   "devDependencies": {
-    "@pixdif/tests": "file:test",
+    "@pixdif-tests/core": "file:test/core",
+    "@pixdif-tests/parser": "file:test/parser",
+    "@pixdif/html-reporter": "^0.3.2",
+    "@pixdif/pdf-parser": "^0.3.1",
+    "@pixdif/png-parser": "^0.1.0",
     "@types/node": "^18.16.3",
     "@types/pixelmatch": "^5.2.4",
     "@types/pngjs": "^6.0.1",
