@@ -2,7 +2,7 @@ import {
 	expect,
 	test,
 } from '@jest/globals';
-import capitalize from '../../src/util/capitalize';
+import capitalize from '@pixdif/core/util/capitalize';
 
 test('Convert a word', () => {
 	const res = capitalize('this');

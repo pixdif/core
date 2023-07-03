@@ -1,0 +1,19 @@
+{
+  "name": "@pixdif/tests",
+  "version": "0.3.1",
+  "description": "Tests of Pixdif",
+  "main": "index.js",
+  "author": "Kazuichi Takashiro",
+  "license": "MIT",
+  "dependencies": {
+    "@jest/globals": "^29.5.0",
+    "@pixdif/core": "file:../src/core",
+    "@pixdif/model": "^0.6.0",
+    "@pixdif/html-reporter": "^0.3.2",
+    "@pixdif/pdf-parser": "^0.3.0",
+    "@pixdif/png-parser": "^0.1.0",
+    "glob": "^10.3.1",
+    "pngjs": "^7.0.0",
+    "rimraf": "^5.0.1"
+  }
+}

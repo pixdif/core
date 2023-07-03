@@ -1,7 +1,7 @@
 {
-  "name": "@pixdif/core",
+  "name": "@pixdif/pixdif",
   "version": "0.3.1",
-  "description": "Core Library of Pixdif",
+  "description": "A Library to compare and show visual differences",
   "main": "dist",
   "scripts": {
     "build": "tsc",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pixdif/core.git"
+    "url": "git+https://github.com/pixdif/pixdif.git"
   },
   "keywords": [
     "pixel",
@@ -23,22 +23,14 @@
   "author": "Kazuichi Takashiro",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/pixdif/core/issues"
+    "url": "https://github.com/pixdif/pixdif/issues"
   },
-  "homepage": "https://github.com/pixdif/core#readme",
+  "homepage": "https://github.com/pixdif/pixdif#readme",
   "dependencies": {
-    "@pixdif/model": "^0.6.0",
-    "@pixdif/parser": "^0.5.0",
-    "glob": "^10.2.2",
-    "pixelmatch": "^5.3.0",
-    "pngjs": "^7.0.0",
-    "rimraf": "^5.0.0"
+    "@pixdif/core": "file:src/core"
   },
   "devDependencies": {
-    "@jest/globals": "^29.5.0",
-    "@pixdif/html-reporter": "^0.3.2",
-    "@pixdif/pdf-parser": "^0.3.0",
-    "@pixdif/png-parser": "^0.1.0",
+    "@pixdif/tests": "file:test",
     "@types/glob": "^8.1.0",
     "@types/node": "^18.16.3",
     "@types/pixelmatch": "^5.2.4",
@@ -51,5 +43,9 @@
     "jest": "^29.5.0",
     "ts-jest": "^29.1.0",
     "typescript": "^5.0.4"
-  }
+  },
+  "workspaces": [
+    "src/*",
+    "test"
+  ]
 }

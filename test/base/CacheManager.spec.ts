@@ -14,8 +14,8 @@ import { Progress } from '@pixdif/model';
 import PdfParser from '@pixdif/pdf-parser';
 import PngParser from '@pixdif/png-parser';
 
-import CacheManager from '../../src/base/CacheManager';
-import compareImage from '../../src/util/compareImage';
+import CacheManager from '@pixdif/core/base/CacheManager';
+import compareImage from '@pixdif/core/util/compareImage';
 
 const cacheDir = 'output/cache/test/sample/shape';
 const filePath = 'test/sample/shape.pdf';

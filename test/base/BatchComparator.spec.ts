@@ -7,9 +7,8 @@ import path from 'path';
 import { rimraf } from 'rimraf';
 import { TestStatus } from '@pixdif/model';
 
-import BatchComparator from '../../src/base/BatchComparator';
-import type TestReport from '../../src/base/TestReport';
-import BatchTask from '../../src/base/BatchTask';
+import { BatchComparator, BatchTask } from '@pixdif/core';
+import type { TestReport } from '@pixdif/core';
 
 const to = 'output/batch';
 const cmp = new BatchComparator(to);

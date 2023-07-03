@@ -1,0 +1,37 @@
+{
+  "name": "@pixdif/core",
+  "version": "0.3.1",
+  "description": "Core Library of Pixdif",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "debug": "tsc --sourceMap --incremental",
+    "test": "npm run lint && npm run jest",
+    "lint": "eslint --ext=js,ts --max-warnings=0 .",
+    "jest": "jest --no-cache --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixdif/pixdif/tree/main/src/core"
+  },
+  "keywords": [
+    "pixel",
+    "difference",
+    "compare",
+    "image"
+  ],
+  "author": "Kazuichi Takashiro",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pixdif/pixdif/issues"
+  },
+  "homepage": "https://github.com/pixdif/core#readme",
+  "dependencies": {
+    "@pixdif/model": "^0.6.0",
+    "@pixdif/parser": "^0.5.0",
+    "glob": "^10.2.2",
+    "pixelmatch": "^5.3.0",
+    "pngjs": "^7.0.0",
+    "rimraf": "^5.0.0"
+  }
+}
