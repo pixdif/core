@@ -77,6 +77,10 @@ it('compares PDF files', async () => {
 	report = await cmp.exec();
 }, 20 * 1000);
 
+it('collects test cases', async () => {
+	await report.collect();
+});
+
 it('can correctly show matched pages', () => {
 	const testCase = report.get(0);
 	const imageDir = 'data/shape to shape';

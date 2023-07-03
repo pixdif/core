@@ -1,4 +1,7 @@
+import fs from 'fs';
 import fsp from 'fs/promises';
+import path from 'path';
+import { glob } from 'glob';
 import {
 	Config,
 	TestCase,
@@ -6,7 +9,6 @@ import {
 	TestReport as TestReportModel,
 	TestReportWriter,
 } from '@pixdif/model';
-import path from 'path';
 
 function loadReportWriter(format: string): TestReportWriter {
 	/*
@@ -37,12 +39,24 @@ export class TestReport {
 
 	private config: Config;
 
-	private testCases: TestCase[];
+	private testCases: TestCase[] = [];
 
-	constructor(location: string, config: Config, testCases: Readonly<TestCase>[] = []) {
+	constructor(location: string, config: Config) {
 		this.location = location;
 		this.config = config;
-		this.testCases = testCases.map((testCase) => this.#resolveTestCase(testCase));
+	}
+
+	async collect(): Promise<void> {
+		const testCaseFiles = await glob('**/test-case.pixdif.json');
+		testCaseFiles.sort((a, b) => {
+			const m = fs.statSync(a);
+			const n = fs.statSync(b);
+			return m.ctimeMs - n.ctimeMs;
+		});
+		for (const testCaseFile of testCaseFiles) {
+			const testCase = JSON.parse(await fsp.readFile(testCaseFile, 'utf-8'));
+			this.testCases.push(this.#resolveTestCase(testCase));
+		}
 	}
 
 	#resolveTestCase(from: Readonly<TestCase>): TestCase {

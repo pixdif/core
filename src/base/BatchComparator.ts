@@ -138,7 +138,6 @@ export class BatchComparator extends EventEmitter {
 			cacheDir,
 		} = this;
 
-		const testCases: TestCase[] = [];
 		for (const task of this.tasks) {
 			this.progress++;
 
@@ -163,7 +162,6 @@ export class BatchComparator extends EventEmitter {
 			});
 
 			this.emit('progress', progress);
-			testCases.push(task.getTestCase());
 		}
 
 		this.emit('stopped');
@@ -172,7 +170,7 @@ export class BatchComparator extends EventEmitter {
 			tolerance,
 			wsEndpoint,
 		};
-		return new TestReport(reportDir, config, testCases);
+		return new TestReport(reportDir, config);
 	}
 }
 

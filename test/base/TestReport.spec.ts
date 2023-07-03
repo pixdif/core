@@ -46,9 +46,10 @@ it('saves a success and a failure', async () => {
 		actual: 'out/failure.pdf',
 		status: TestStatus.Mismatched,
 	};
-	const report = new TestReport(to, config, [success]);
+	const report = new TestReport(to, config);
 	report.setFormat('@pixdif/html-reporter');
 	expect(report.getFormat()).toBe('@pixdif/html-reporter');
+	report.add(success);
 	report.add(failure);
 	expect(report.length).toBe(2);
 
