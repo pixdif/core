@@ -48,6 +48,6 @@
   },
   "workspaces": [
     "src/*",
-    "test"
+    "test/*"
   ]
 }

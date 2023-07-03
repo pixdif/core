@@ -8,9 +8,9 @@ import path from 'path';
 
 import compareImage from '@pixdif/core/util/compareImage';
 
-const a = path.resolve(__dirname, '../sample/shapes-a.png');
-const b = path.resolve(__dirname, '../sample/shapes-b.png');
-const c = path.resolve(__dirname, '../sample/circle.png');
+const a = path.resolve('test/sample/shapes-a.png');
+const b = path.resolve('test/sample/shapes-b.png');
+const c = path.resolve('test/sample/circle.png');
 
 test('Compare the same image', async () => {
 	const expected = fs.createReadStream(a);
