@@ -1,0 +1,25 @@
+{
+  "name": "@pixdif/model",
+  "version": "0.6.0",
+  "description": "Data Models of PixDif",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "debug": "tsc --incremental --sourceMap",
+    "test": "eslint --ext=js,ts ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixdif/pixdif/tree/main/src/model"
+  },
+  "keywords": [
+    "compare",
+    "image"
+  ],
+  "author": "Kazuichi Takashiro",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pixdif/pixdif/issues"
+  },
+  "homepage": "https://github.com/pixdif/pixdif#readme"
+}
