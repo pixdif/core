@@ -1,6 +1,6 @@
 {
   "name": "@pixdif/parser",
-  "version": "0.5.0",
+  "version": "0.7.0",
   "description": "Abstract Parser of Different Data Formats",
   "main": "dist",
   "repository": {
