@@ -84,21 +84,20 @@ it('can correctly show matched pages', () => {
 	const testCase = report.get(0);
 	const imageDir = 'data/shape to shape';
 	const shapeFile = path.normalize('../../test/sample/shape.pdf');
-	expect(testCase).toEqual({
-		name: 'shape to shape',
-		expected: shapeFile,
-		actual: shapeFile,
-		status: TestStatus.Matched,
-		details: [
-			{
-				expected: path.join(imageDir, 'expected/1.png'),
-				diff: path.join(imageDir, '1.png'),
-				actual: path.join(imageDir, 'actual/1.png'),
-				name: 'Page 1',
-				ratio: 0,
-			},
-		],
-	});
+	expect(testCase?.name).toBe('shape to shape');
+	expect(testCase?.expected).toBe(shapeFile);
+	expect(testCase?.actual).toBe(shapeFile);
+	expect(testCase?.actual).toBe(shapeFile);
+	expect(testCase?.status).toBe(TestStatus.Matched);
+	expect(testCase?.details).toEqual([
+		{
+			expected: path.join(imageDir, 'expected/1.png'),
+			diff: path.join(imageDir, '1.png'),
+			actual: path.join(imageDir, 'actual/1.png'),
+			name: 'Page 1',
+			ratio: 0,
+		},
+	]);
 });
 
 it('can tell differences', () => {

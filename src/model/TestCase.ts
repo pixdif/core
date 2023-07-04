@@ -34,9 +34,14 @@ export interface TestCase {
 	details?: TestPoint[];
 
 	/**
-	 * Execution time.
+	 * When it started executing.
 	 */
-	executionTime?: number;
+	startTime?: number;
+
+	/**
+	 * When it finished executing.
+	 */
+	endTime?: number;
 
 	/**
 	 * Other information.
