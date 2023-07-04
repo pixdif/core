@@ -8,12 +8,13 @@ import {
 	Progress,
 	TestPoint,
 } from '@pixdif/model';
-import Parser from '@pixdif/parser';
+import { Parser } from '@pixdif/parser';
 
-import compareImage from '../util/compareImage';
 import CacheManager from './CacheManager';
-import parse from '../util/parse';
-import waitFor from '../util/waitFor';
+
+import compareImage from './util/compareImage';
+import parse from './util/parse';
+import waitFor from './util/waitFor';
 
 function getImageDir(filePath: string): string {
 	const info = path.parse(filePath);

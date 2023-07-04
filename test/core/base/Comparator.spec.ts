@@ -7,7 +7,7 @@ import path from 'path';
 import { PNG } from 'pngjs';
 import { rimraf } from 'rimraf';
 
-import Comparator, { compare } from '@pixdif/core/base/Comparator';
+import Comparator, { compare } from '@pixdif/core/Comparator';
 import waitFor from '@pixdif/core/util/waitFor';
 
 it('compares the same PDF file', async () => {

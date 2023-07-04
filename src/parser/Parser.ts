@@ -5,7 +5,7 @@ import Outline from './Outline';
 import Page from './Page';
 import PagedDevice from './PagedDevice';
 
-import hash, { HashOptions } from '../util/hash';
+import hash, { HashOptions } from './util/hash';
 
 export interface Parser {
 	on(event: 'open', listener: () => void): this;

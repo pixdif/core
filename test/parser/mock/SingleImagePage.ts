@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { Readable } from 'stream';
-import Page from '@pixdif/parser/base/Page';
+import Page from '@pixdif/parser/Page';
 
 export default class SingleImage extends Page {
 	protected title: string;

@@ -1,5 +1,5 @@
 import path from 'path';
-import Parser from '@pixdif/parser';
+import { Parser } from '@pixdif/parser';
 
 export type ParserType = new(filePath: string) => Parser;
 

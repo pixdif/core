@@ -6,9 +6,9 @@ import { Readable } from 'stream';
 
 import { rimraf } from 'rimraf';
 import { Progress } from '@pixdif/model';
-import Parser from '@pixdif/parser';
+import { Parser } from '@pixdif/parser';
 
-import waitFor from '../util/waitFor';
+import waitFor from './util/waitFor';
 
 interface CacheMeta {
 	pageNum: number;

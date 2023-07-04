@@ -1,5 +1,5 @@
 import fs from 'fs';
-import Parser, { Outline, Page } from '@pixdif/parser';
+import { Parser, Outline, Page } from '@pixdif/parser';
 
 import SingleImageOutline from './SingleImageOutline';
 import SingleImage from './SingleImagePage';

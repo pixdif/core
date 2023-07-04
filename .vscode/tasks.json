@@ -7,6 +7,17 @@
 			"label": "Lint current file",
 			"type": "shell",
 			"command": "npx eslint --fix ${file}"
+		},
+		{
+			"type": "npm",
+			"script": "debug",
+			"problemMatcher": [],
+			"label": "npm: debug",
+			"detail": "tsc --sourceMap --incremental",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
 		}
 	]
 }
