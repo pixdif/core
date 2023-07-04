@@ -26,9 +26,10 @@ jobs:
       -
         name: Publish
         run: |
-          cd dist
-          sed 's#"main": "dist"#"main": "index.js"#' ../package.json > package.json
-          cp ../LICENSE .
-          npm publish --access=public
+          for pkgDir in $(ls src); do
+            cp src/$pkgDir/package.json dist/$pkgDir
+            cp LICENSE dist/$pkgDir
+            (cd dist/$pkgDir && npm publish --access=public)
+          done
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
