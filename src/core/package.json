@@ -3,13 +3,6 @@
   "version": "0.3.1",
   "description": "Core Library of Pixdif",
   "main": "index.js",
-  "scripts": {
-    "build": "tsc",
-    "debug": "tsc --sourceMap --incremental",
-    "test": "npm run lint && npm run jest",
-    "lint": "eslint --ext=js,ts --max-warnings=0 .",
-    "jest": "jest --no-cache --coverage"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/pixdif/pixdif/tree/main/src/core"

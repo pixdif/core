@@ -3,13 +3,6 @@
   "version": "0.5.0",
   "description": "Abstract Parser of Different Data Formats",
   "main": "dist",
-  "scripts": {
-    "build": "tsc",
-    "debug": "tsc --incremental --sourceMap",
-    "test": "npm run lint && npm run jest",
-    "lint": "eslint --ext=ts,js .",
-    "jest": "jest --no-cache --coverage"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/pixdif/pixdif/tree/main/src/parser"

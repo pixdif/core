@@ -1,0 +1,24 @@
+{
+  "name": "@pixdif/png-parser",
+  "version": "0.1.0",
+  "description": "A pass-through reader for PNG images. Pixdif has already built-in support for PNG.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pixdif/pixdif/tree/main/src/png-parser"
+  },
+  "keywords": [
+    "png",
+    "compare",
+    "image"
+  ],
+  "author": "Kazuichi Takashiro",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pixdif/pixdif/issues"
+  },
+  "homepage": "https://github.com/pixdif/pixdif#readme",
+  "dependencies": {
+    "@pixdif/parser": "^0.5.0"
+  }
+}

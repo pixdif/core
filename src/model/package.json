@@ -3,11 +3,6 @@
   "version": "0.6.0",
   "description": "Data Models of PixDif",
   "main": "index.js",
-  "scripts": {
-    "build": "tsc",
-    "debug": "tsc --incremental --sourceMap",
-    "test": "eslint --ext=js,ts ."
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/pixdif/pixdif/tree/main/src/model"
