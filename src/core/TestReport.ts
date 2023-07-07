@@ -46,7 +46,9 @@ export class TestReport {
 	}
 
 	async collect(): Promise<void> {
-		const testCaseFiles = await glob('**/test-case.pixdif.json');
+		const testCaseFiles = await glob('**/test-case.pixdif.json', {
+			cwd: this.location,
+		});
 		for (const testCaseFile of testCaseFiles) {
 			const testCase = JSON.parse(await fsp.readFile(testCaseFile, 'utf-8'));
 			this.testCases.push(this.#resolveTestCase(testCase));
