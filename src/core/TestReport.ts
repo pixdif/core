@@ -50,7 +50,8 @@ export class TestReport {
 			cwd: this.location,
 		});
 		for (const testCaseFile of testCaseFiles) {
-			const testCase = JSON.parse(await fsp.readFile(testCaseFile, 'utf-8'));
+			const location = path.join(this.location, testCaseFile);
+			const testCase = JSON.parse(await fsp.readFile(location, 'utf-8'));
 			this.testCases.push(this.#resolveTestCase(testCase));
 		}
 		this.testCases.sort((a, b) => {
