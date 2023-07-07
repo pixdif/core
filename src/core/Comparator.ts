@@ -57,10 +57,21 @@ export interface ComparisonOptions {
 }
 
 export interface Comparator {
+	on(event: 'started', listener: () => void): this;
 	on(event: Action, listener: (progress: Progress) => void): this;
+	on(event: 'stopped', listener: () => void): this;
+
+	once(event: 'started', listener: () => void): this;
 	once(event: Action, listener: (progress: Progress) => void): this;
+	once(event: 'stopped', listener: () => void): this;
+
+	off(event: 'started', listener: () => void): this;
 	off(event: Action, listener: (progress: Progress) => void): this;
+	off(event: 'stopped', listener: () => void): this;
+
+	emit(event: 'started'): boolean;
 	emit(event: Action, progress: Progress): boolean;
+	emit(event: 'stopped'): boolean;
 }
 
 /**
@@ -132,6 +143,7 @@ export class Comparator extends EventEmitter {
 		const actualPageNum = actual ? await actual.getPageNum() : 0;
 
 		// Compare each page
+		this.emit('started');
 		const pageNum = Math.max(expectedPageNum, actualPageNum);
 		const details: TestPoint[] = [];
 		for (let i = 1; i <= pageNum; i++) {
@@ -191,6 +203,7 @@ export class Comparator extends EventEmitter {
 				ratio,
 			});
 		}
+		this.emit('stopped');
 
 		return details;
 	}
