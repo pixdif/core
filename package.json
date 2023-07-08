@@ -1,6 +1,6 @@
 {
   "name": "@pixdif/pixdif",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "A Library to compare and show visual differences",
   "main": "dist",
   "scripts": {
