@@ -1,6 +1,6 @@
 {
   "name": "@pixdif/core",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Core Library of Pixdif",
   "main": "index.js",
   "repository": {
@@ -20,8 +20,8 @@
   },
   "homepage": "https://github.com/pixdif/core#readme",
   "dependencies": {
-    "@pixdif/model": "^0.7.0",
-    "@pixdif/parser": "^0.7.0",
+    "@pixdif/model": "^0.8.0",
+    "@pixdif/parser": "^0.8.0",
     "glob": "^10.2.2",
     "pixelmatch": "^5.3.0",
     "pngjs": "^7.0.0",
