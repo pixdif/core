@@ -205,6 +205,8 @@ export class Comparator extends EventEmitter {
 		}
 		this.emit('stopped');
 
+		await actual?.close();
+
 		return details;
 	}
 
