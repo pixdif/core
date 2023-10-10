@@ -7,7 +7,7 @@ import PagedDevice from './PagedDevice';
 
 import hash, { HashOptions } from './util/hash';
 
-export interface Parser {
+interface ParserEvents {
 	on(event: 'open', listener: () => void): this;
 	on(event: 'close', listener: () => void): this;
 
@@ -21,7 +21,7 @@ export interface Parser {
 	emit(event: 'close'): boolean;
 }
 
-export abstract class Parser extends EventEmitter implements PagedDevice {
+export abstract class Parser extends EventEmitter implements PagedDevice, ParserEvents {
 	protected filePath: string;
 
 	constructor(filePath: string) {

@@ -1,12 +1,6 @@
 import Page from './Page';
 import PagedDevice from './PagedDevice';
 
-export interface Outline {
-	getTitle(): string;
-
-	getChildren(): Outline[];
-}
-
 export interface OutlineProperties {
 	children?: Outline[];
 }

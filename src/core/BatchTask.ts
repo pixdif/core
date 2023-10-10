@@ -14,7 +14,7 @@ interface ExecutionOptions {
 	cacheDir?: string;
 }
 
-export interface BatchTask {
+interface BatchTaskEvents {
 	on(event: 'started', listener: (cmp: Comparator) => void): this;
 	on(event: 'stopped', listener: () => void): this;
 
@@ -28,7 +28,7 @@ export interface BatchTask {
 	emit(event: 'stopped'): boolean;
 }
 
-export class BatchTask extends EventEmitter {
+export class BatchTask extends EventEmitter implements BatchTaskEvents {
 	protected readonly testCase: TestCase;
 
 	constructor(props: BatchTaskProps) {

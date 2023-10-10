@@ -19,7 +19,7 @@ export interface CacheOptions {
 	cacheDir: string;
 }
 
-interface CacheManager {
+interface CacheManagerEvents {
 	on(eventName: 'progress', listener: (progress: Progress) => void): this;
 
 	once(eventName: 'progress', listener: (progress: Progress) => void): this;
@@ -29,7 +29,7 @@ interface CacheManager {
 	emit(eventName: 'progress', progress: Progress): boolean;
 }
 
-class CacheManager extends EventEmitter {
+class CacheManager extends EventEmitter implements CacheManagerEvents {
 	protected parser: Parser;
 
 	protected cacheDir: string;

@@ -6,7 +6,7 @@
   "author": "Kazuichi Takashiro",
   "license": "MIT",
   "dependencies": {
-    "@pixdif/core": "file:../src/core",
-    "@pixdif/model": "file:../src/model"
+    "@pixdif/core": "file:../../src/core",
+    "@pixdif/model": "file:../../src/model"
   }
 }
