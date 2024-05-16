@@ -57,7 +57,6 @@ export class BatchTask extends EventEmitter implements BatchTaskEvents {
 		});
 
 		this.emit('started', cmp);
-		this.testCase.startTime = new Date().getTime();
 
 		const details = await cmp.exec();
 		this.testCase.details = details;
@@ -72,7 +71,6 @@ export class BatchTask extends EventEmitter implements BatchTaskEvents {
 		} else {
 			this.testCase.status = TestStatus.ActualNotFound;
 		}
-		this.testCase.endTime = new Date().getTime();
 
 		await fsp.writeFile(path.join(dataDir, 'test-case.pixdif.json'), JSON.stringify(this.testCase));
 		this.emit('stopped');

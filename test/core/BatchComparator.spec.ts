@@ -39,6 +39,9 @@ it('adds tasks', async () => {
 		name: 'shape to shape',
 		expected: 'test/sample/shape.pdf',
 		actual: 'test/sample/shape.pdf',
+		extra: {
+			executionTime: '2346.67ms',
+		},
 	}));
 	cmp.addTask(new BatchTask({
 		name: 'shape to square',
@@ -81,15 +84,15 @@ it('collects test cases', async () => {
 });
 
 it('can correctly show matched pages', () => {
-	const testCase = report.get(0);
+	const testCase = report.get(0)!;
 	const imageDir = 'data/shape to shape';
 	const shapeFile = path.normalize('../../test/sample/shape.pdf');
-	expect(testCase?.name).toBe('shape to shape');
-	expect(testCase?.expected).toBe(shapeFile);
-	expect(testCase?.actual).toBe(shapeFile);
-	expect(testCase?.actual).toBe(shapeFile);
-	expect(testCase?.status).toBe(TestStatus.Matched);
-	expect(testCase?.details).toEqual([
+	expect(testCase.name).toBe('shape to shape');
+	expect(testCase.expected).toBe(shapeFile);
+	expect(testCase.actual).toBe(shapeFile);
+	expect(testCase.actual).toBe(shapeFile);
+	expect(testCase.status).toBe(TestStatus.Matched);
+	expect(testCase.details).toEqual([
 		{
 			expected: path.join(imageDir, 'expected/1.png'),
 			diff: path.join(imageDir, '1.png'),
@@ -98,30 +101,33 @@ it('can correctly show matched pages', () => {
 			ratio: 0,
 		},
 	]);
+	expect(testCase.extra).toStrictEqual({
+		executionTime: '2346.67ms',
+	});
 });
 
 it('can tell differences', () => {
-	const testCase = report.get(1);
-	expect(testCase?.name).toBe('shape to square');
-	expect(testCase?.path).toBe(path.normalize('../../test/sample/shape-to-square.yaml'));
-	expect(testCase?.expected).toBe(path.normalize('../../test/sample/shape.pdf'));
-	expect(testCase?.actual).toBe(path.normalize('../../test/sample/square.pdf'));
-	expect(testCase?.status).toBe(TestStatus.Mismatched);
+	const testCase = report.get(1)!;
+	expect(testCase.name).toBe('shape to square');
+	expect(testCase.path).toBe(path.normalize('../../test/sample/shape-to-square.yaml'));
+	expect(testCase.expected).toBe(path.normalize('../../test/sample/shape.pdf'));
+	expect(testCase.actual).toBe(path.normalize('../../test/sample/square.pdf'));
+	expect(testCase.status).toBe(TestStatus.Mismatched);
 
-	const details = testCase?.details;
+	const details = testCase.details!;
 	expect(details).toHaveLength(1);
-	expect(details?.[0].ratio).toBeGreaterThan(0);
+	expect(details[0].ratio).toBeGreaterThan(0);
 });
 
 it('skips comparing if expected file is not found', () => {
-	const testCase = report.get(2);
-	expect(testCase?.name).toBe('expected not found');
-	expect(testCase?.status).toBe(TestStatus.ExpectedNotFound);
+	const testCase = report.get(2)!;
+	expect(testCase.name).toBe('expected not found');
+	expect(testCase.status).toBe(TestStatus.ExpectedNotFound);
 
 	const imageDir = 'data/test/sample/expected-not-found';
-	const details = testCase?.details;
+	const details = testCase.details!;
 	expect(details).toHaveLength(1);
-	expect(details?.[0]).toEqual({
+	expect(details[0]).toEqual({
 		expected: path.join(imageDir, 'expected/1.png'),
 		diff: path.join(imageDir, '1.png'),
 		actual: path.join(imageDir, 'actual/1.png'),
@@ -131,14 +137,14 @@ it('skips comparing if expected file is not found', () => {
 });
 
 it('skips comparing if actual file is not found', () => {
-	const testCase = report.get(3);
-	expect(testCase?.name).toBe('actual not found');
-	expect(testCase?.status).toBe(TestStatus.ActualNotFound);
+	const testCase = report.get(3)!;
+	expect(testCase.name).toBe('actual not found');
+	expect(testCase.status).toBe(TestStatus.ActualNotFound);
 
 	const imageDir = 'data/test/sample/actual-not-found';
-	const details = testCase?.details;
+	const details = testCase.details!;
 	expect(details).toHaveLength(1);
-	expect(details?.[0]).toEqual({
+	expect(details[0]).toEqual({
 		expected: path.join(imageDir, 'expected/1.png'),
 		diff: path.join(imageDir, '1.png'),
 		actual: path.join(imageDir, 'actual/1.png'),
@@ -148,14 +154,14 @@ it('skips comparing if actual file is not found', () => {
 });
 
 it('can handle fewer pages than expected', () => {
-	const testCase = report.get(4);
-	expect(testCase?.name).toBe('fewer pages');
-	expect(testCase?.status).toBe(TestStatus.Mismatched);
+	const testCase = report.get(4)!;
+	expect(testCase.name).toBe('fewer pages');
+	expect(testCase.status).toBe(TestStatus.Mismatched);
 
 	const imageDir = 'data/fewer pages';
-	const details = testCase?.details;
+	const details = testCase.details!;
 	expect(details).toHaveLength(2);
-	expect(details?.[1]).toEqual({
+	expect(details[1]).toEqual({
 		expected: path.join(imageDir, 'expected/2.png'),
 		diff: path.join(imageDir, '2.png'),
 		actual: path.join(imageDir, 'actual/2.png'),
@@ -165,14 +171,14 @@ it('can handle fewer pages than expected', () => {
 });
 
 it('can handle more pages than expected', () => {
-	const testCase = report.get(5);
-	expect(testCase?.name).toBe('more pages');
-	expect(testCase?.status).toBe(TestStatus.Mismatched);
+	const testCase = report.get(5)!;
+	expect(testCase.name).toBe('more pages');
+	expect(testCase.status).toBe(TestStatus.Mismatched);
 
 	const imageDir = 'data/more pages';
-	const details = testCase?.details;
+	const details = testCase.details!;
 	expect(details).toHaveLength(2);
-	expect(details?.[1]).toEqual({
+	expect(details[1]).toEqual({
 		expected: path.join(imageDir, 'expected/2.png'),
 		diff: path.join(imageDir, '2.png'),
 		actual: path.join(imageDir, 'actual/2.png'),

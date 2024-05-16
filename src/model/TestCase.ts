@@ -34,19 +34,9 @@ export interface TestCase {
 	details?: TestPoint[];
 
 	/**
-	 * When it started executing.
-	 */
-	startTime?: number;
-
-	/**
-	 * When it finished executing.
-	 */
-	endTime?: number;
-
-	/**
 	 * Other information.
 	 */
-	comment?: string;
+	extra?: Record<string, unknown>;
 }
 
 export default TestCase;

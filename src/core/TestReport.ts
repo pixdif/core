@@ -1,3 +1,4 @@
+import fs from 'fs';
 import fsp from 'fs/promises';
 import path from 'path';
 import { glob } from 'glob';
@@ -46,19 +47,21 @@ export class TestReport {
 	}
 
 	async collect(): Promise<void> {
-		const testCaseFiles = await glob('**/test-case.pixdif.json', {
+		const testCaseFileNames = await glob('**/test-case.pixdif.json', {
 			cwd: this.location,
 		});
-		for (const testCaseFile of testCaseFiles) {
-			const location = path.join(this.location, testCaseFile);
+		const testCaseFiles = testCaseFileNames.map((fileName) => {
+			const location = path.join(this.location, fileName);
+			const stat = fs.statSync(location);
+			return {
+				location,
+				modifiedTime: stat.mtime,
+			};
+		}).sort((a, b) => a.modifiedTime.getTime() - b.modifiedTime.getTime());
+		for (const { location } of testCaseFiles) {
 			const testCase = JSON.parse(await fsp.readFile(location, 'utf-8'));
 			this.testCases.push(this.#resolveTestCase(testCase));
 		}
-		this.testCases.sort((a, b) => {
-			const m = a.startTime ?? 0;
-			const n = b.startTime ?? 0;
-			return m - n;
-		});
 	}
 
 	#resolveTestCase(from: Readonly<TestCase>): TestCase {
