@@ -5,7 +5,7 @@ import {
 } from '@jest/globals';
 import path from 'path';
 import { rimraf } from 'rimraf';
-import { TestStatus } from '@pixdif/model';
+import { ColumnDefinition, TestStatus } from '@pixdif/model';
 
 import { BatchComparator, BatchTask } from '@pixdif/core';
 import type { TestReport } from '@pixdif/core';
@@ -191,5 +191,8 @@ it('generates a report', async () => {
 	report.setTitle('Sample Report');
 	expect(report.getTitle()).toBe('Sample Report');
 	report.setFormat('@pixdif/html-reporter');
+	const col: ColumnDefinition = [4, 'Execution Time', 'executionTime'];
+	report.setExtraColumns([col]);
+	expect(report.getExtraColumns()).toContain(col);
 	await report.save();
 });

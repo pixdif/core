@@ -3,6 +3,7 @@ import fsp from 'fs/promises';
 import path from 'path';
 import { glob } from 'glob';
 import {
+	ColumnDefinition,
 	Config,
 	TestCase,
 	TestPoint,
@@ -38,6 +39,8 @@ export class TestReport {
 	private format: string = TestReportFormat.Json;
 
 	private config: Config;
+
+	private extraColumns?: ColumnDefinition[];
 
 	private testCases: TestCase[] = [];
 
@@ -119,6 +122,21 @@ export class TestReport {
 		this.format = format;
 	}
 
+	/**
+	 * @returns Extra columns.
+	 */
+	getExtraColumns(): ColumnDefinition[] | undefined {
+		return this.extraColumns;
+	}
+
+	/**
+	 * Sets extra columns.
+	 * @param cols column definitions
+	 */
+	setExtraColumns(cols: ColumnDefinition[]): void {
+		this.extraColumns = cols;
+	}
+
 	getConfig(): Config {
 		return this.config;
 	}
@@ -151,6 +169,7 @@ export class TestReport {
 		return {
 			title: this.title,
 			config: this.config,
+			extraColumns: this.extraColumns,
 			cases,
 		};
 	}
