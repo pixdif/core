@@ -140,6 +140,7 @@ export class BatchComparator extends EventEmitter implements BatchComparatorEven
 
 		for (const task of this.tasks) {
 			this.progress++;
+			task.setId(String(this.progress));
 
 			const progress: BatchProgress = {
 				testCase: task.getTestCase(),

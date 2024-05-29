@@ -29,6 +29,8 @@ interface BatchTaskEvents {
 }
 
 export class BatchTask extends EventEmitter implements BatchTaskEvents {
+	protected id = '';
+
 	protected readonly testCase: TestCase;
 
 	constructor(props: BatchTaskProps) {
@@ -36,16 +38,24 @@ export class BatchTask extends EventEmitter implements BatchTaskEvents {
 		this.testCase = { ...props };
 	}
 
+	setId(id: string): void {
+		this.id = id;
+	}
+
+	getId(): string {
+		return this.id;
+	}
+
 	getTestCase(): TestCase {
 		return this.testCase;
 	}
 
 	getUniqueDir(): string {
-		if (this.testCase.path) {
-			const { dir, name } = path.parse(this.testCase.path);
-			return path.join(dir, name);
+		if (this.id) {
+			return String(this.id);
 		}
-		return this.testCase.name;
+		const { dir, name } = path.parse(this.testCase.actual);
+		return path.join(dir, name);
 	}
 
 	async exec(options: ExecutionOptions): Promise<void> {

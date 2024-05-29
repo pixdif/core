@@ -85,7 +85,7 @@ it('collects test cases', async () => {
 
 it('can correctly show matched pages', () => {
 	const testCase = report.get(0)!;
-	const imageDir = 'data/shape to shape';
+	const imageDir = 'data/1';
 	const shapeFile = path.normalize('../../test/sample/shape.pdf');
 	expect(testCase.name).toBe('shape to shape');
 	expect(testCase.expected).toBe(shapeFile);
@@ -124,7 +124,7 @@ it('skips comparing if expected file is not found', () => {
 	expect(testCase.name).toBe('expected not found');
 	expect(testCase.status).toBe(TestStatus.ExpectedNotFound);
 
-	const imageDir = 'data/test/sample/expected-not-found';
+	const imageDir = 'data/3';
 	const details = testCase.details!;
 	expect(details).toHaveLength(1);
 	expect(details[0]).toEqual({
@@ -141,7 +141,7 @@ it('skips comparing if actual file is not found', () => {
 	expect(testCase.name).toBe('actual not found');
 	expect(testCase.status).toBe(TestStatus.ActualNotFound);
 
-	const imageDir = 'data/test/sample/actual-not-found';
+	const imageDir = 'data/4';
 	const details = testCase.details!;
 	expect(details).toHaveLength(1);
 	expect(details[0]).toEqual({
@@ -158,7 +158,7 @@ it('can handle fewer pages than expected', () => {
 	expect(testCase.name).toBe('fewer pages');
 	expect(testCase.status).toBe(TestStatus.Mismatched);
 
-	const imageDir = 'data/fewer pages';
+	const imageDir = 'data/5';
 	const details = testCase.details!;
 	expect(details).toHaveLength(2);
 	expect(details[1]).toEqual({
@@ -175,7 +175,7 @@ it('can handle more pages than expected', () => {
 	expect(testCase.name).toBe('more pages');
 	expect(testCase.status).toBe(TestStatus.Mismatched);
 
-	const imageDir = 'data/more pages';
+	const imageDir = 'data/6';
 	const details = testCase.details!;
 	expect(details).toHaveLength(2);
 	expect(details[1]).toEqual({
