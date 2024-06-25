@@ -1,6 +1,6 @@
 {
   "name": "@pixdif/png-parser",
-  "version": "0.9.1",
+  "version": "0.10.0",
   "description": "A pass-through reader for PNG images. Pixdif has already built-in support for PNG.",
   "type": "module",
   "main": "index.js",
@@ -20,6 +20,6 @@
   },
   "homepage": "https://github.com/pixdif/pixdif#readme",
   "dependencies": {
-    "@pixdif/parser": "^0.9.0"
+    "@pixdif/parser": "^0.10.0"
   }
 }

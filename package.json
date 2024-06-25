@@ -1,6 +1,6 @@
 {
   "name": "@pixdif/pixdif",
-  "version": "0.8.0",
+  "version": "0.10.0",
   "description": "A Library to compare and show visual differences",
   "type": "module",
   "main": "dist",
@@ -34,7 +34,7 @@
     "@pixdif/png-parser": "file:src/png-parser"
   },
   "devDependencies": {
-    "@pixdif/html-reporter": "^0.3.2",
+    "@pixdif/html-reporter": "^0.10.0",
     "@pixdif/pdf-parser": "file:test/pdf-parser",
     "@types/node": "^20.12.12",
     "@types/pixelmatch": "^5.2.4",
