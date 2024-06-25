@@ -2,6 +2,7 @@
   "name": "@pixdif/parser",
   "version": "0.9.1",
   "description": "Abstract Parser of Different Data Formats",
+  "type": "module",
   "main": "index.js",
   "repository": {
     "type": "git",

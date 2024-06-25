@@ -8,7 +8,7 @@ import { rimraf } from 'rimraf';
 import { Progress } from '@pixdif/model';
 import { Parser } from '@pixdif/parser';
 
-import waitFor from './util/waitFor';
+import waitFor from './util/waitFor.js';
 
 interface CacheMeta {
 	pageNum: number;

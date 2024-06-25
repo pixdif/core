@@ -7,8 +7,8 @@ import path from 'path';
 import { PNG } from 'pngjs';
 import { rimraf } from 'rimraf';
 
-import Comparator, { compare } from '@pixdif/core/Comparator';
-import waitFor from '@pixdif/core/util/waitFor';
+import Comparator, { compare } from '@pixdif/core/Comparator.js';
+import waitFor from '@pixdif/core/util/waitFor.js';
 
 it('compares the same PDF file', async () => {
 	const imageDir = 'output/cmp-same';

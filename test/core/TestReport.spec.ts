@@ -8,7 +8,7 @@ import path from 'path';
 import { rimraf } from 'rimraf';
 import { Config, TestCase, TestStatus } from '@pixdif/model';
 
-import TestReport from '@pixdif/core/TestReport';
+import TestReport from '@pixdif/core/TestReport.js';
 
 const config: Config = {
 	tolerance: 0,

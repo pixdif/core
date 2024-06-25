@@ -2,8 +2,8 @@ import { Readable } from 'stream';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
 
-import clipImage from './clipImage';
-import waitFor from './waitFor';
+import clipImage from './clipImage.js';
+import waitFor from './waitFor.js';
 
 interface Comparison {
 	/**

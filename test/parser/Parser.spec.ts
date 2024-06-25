@@ -5,7 +5,7 @@ import {
 	jest,
 } from '@jest/globals';
 
-import SingleImageParser from './mock/SingleImageParser';
+import SingleImageParser from './mock/SingleImageParser.js';
 
 describe('Normal', () => {
 	const input = 'test/sample/circle.png';

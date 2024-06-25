@@ -5,9 +5,9 @@ import {
 	TestCase,
 } from '@pixdif/model';
 
-import type BatchTask from './BatchTask';
-import Comparator from './Comparator';
-import TestReport from './TestReport';
+import type BatchTask from './BatchTask.js';
+import Comparator from './Comparator.js';
+import TestReport from './TestReport.js';
 
 export interface BatchOptions {
 	/**

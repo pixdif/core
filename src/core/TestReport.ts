@@ -11,19 +11,16 @@ import {
 	TestReportWriter,
 } from '@pixdif/model';
 
-function loadReportWriter(format: string): TestReportWriter {
-	/*
-		eslint-disable-next-line
-		import/no-dynamic-require,
-		global-require,
-		@typescript-eslint/no-var-requires
-	*/
-	const reporter = require(format);
-	return reporter.default || reporter;
+async function loadReportWriter(format: string): Promise<TestReportWriter> {
+	let reporter = await import(format);
+	for (let i = 0; i < 2 && reporter.default; i++) {
+		reporter = reporter.default;
+	}
+	return reporter;
 }
 
 async function writeReport(format: string, data: TestReportModel, location: string): Promise<void> {
-	const write = loadReportWriter(format);
+	const write = await loadReportWriter(format);
 	await write(data, location);
 }
 

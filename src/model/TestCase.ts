@@ -1,5 +1,5 @@
-import TestPoint from './TestPoint';
-import TestStatus from './TestStatus';
+import TestPoint from './TestPoint.js';
+import TestStatus from './TestStatus.js';
 
 export interface TestCase {
 	/**

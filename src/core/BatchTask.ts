@@ -1,10 +1,10 @@
 import fs from 'fs';
 import fsp from 'fs/promises';
 import path from 'path';
-import { EventEmitter } from 'stream';
+import { EventEmitter } from 'events';
 import { TestCase, TestStatus } from '@pixdif/model';
 
-import Comparator from './Comparator';
+import Comparator from './Comparator.js';
 
 export type BatchTaskProps = Omit<TestCase, 'status' | 'details'>;
 

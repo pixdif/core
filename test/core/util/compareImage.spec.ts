@@ -6,7 +6,7 @@ import fs from 'fs';
 import fsp from 'fs/promises';
 import path from 'path';
 
-import compareImage from '@pixdif/core/util/compareImage';
+import compareImage from '@pixdif/core/util/compareImage.js';
 
 const a = path.resolve('test/sample/shapes-a.png');
 const b = path.resolve('test/sample/shapes-b.png');

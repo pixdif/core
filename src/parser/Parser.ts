@@ -1,11 +1,11 @@
 import { EventEmitter } from 'events';
 import fs from 'fs';
 
-import Outline from './Outline';
-import Page from './Page';
-import PagedDevice from './PagedDevice';
+import Outline from './Outline.js';
+import Page from './Page.js';
+import PagedDevice from './PagedDevice.js';
 
-import hash, { HashOptions } from './util/hash';
+import hash, { HashOptions } from './util/hash.js';
 
 interface ParserEvents {
 	on(event: 'open', listener: () => void): this;

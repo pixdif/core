@@ -1,5 +1,5 @@
-import Page from './Page';
-import PagedDevice from './PagedDevice';
+import Page from './Page.js';
+import PagedDevice from './PagedDevice.js';
 
 export interface OutlineProperties {
 	children?: Outline[];

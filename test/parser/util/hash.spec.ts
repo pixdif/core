@@ -4,7 +4,7 @@ import {
 } from '@jest/globals';
 import fs from 'fs';
 
-import hash from '@pixdif/parser/util/hash';
+import hash from '@pixdif/parser/util/hash.js';
 
 it('calculates MD5 fingerprint (hex)', async () => {
 	const input = fs.createReadStream('test/sample/circle.png');

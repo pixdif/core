@@ -1,7 +1,7 @@
 import fs from 'fs';
 
 import { Parser, Outline, Page } from '@pixdif/parser';
-import PngFrame from '@pixdif/png-parser/PngFrame';
+import PngFrame from '../../src/png-parser/PngFrame.js';
 
 export default class PdfParser extends Parser {
 	#open = false;

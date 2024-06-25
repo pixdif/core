@@ -10,12 +10,12 @@ import fs from 'fs';
 import fsp from 'fs/promises';
 import path from 'path';
 
-import { Progress } from '@pixdif/model';
+import type { Progress } from '@pixdif/model';
 import PdfParser from '@pixdif/pdf-parser';
 import PngParser from '@pixdif/png-parser';
 
-import CacheManager from '@pixdif/core/CacheManager';
-import compareImage from '@pixdif/core/util/compareImage';
+import CacheManager from '@pixdif/core/CacheManager.js';
+import compareImage from '@pixdif/core/util/compareImage.js';
 
 const cacheDir = 'output/cache/test/sample/shape';
 const filePath = 'test/sample/shape.pdf';

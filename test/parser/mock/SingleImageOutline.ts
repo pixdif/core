@@ -3,7 +3,7 @@ import {
 	OutlineProperties,
 	Page,
 } from '@pixdif/parser';
-import SingleImage from './SingleImagePage';
+import SingleImage from './SingleImagePage.js';
 
 interface Properties extends OutlineProperties {
 	location: string;

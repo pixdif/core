@@ -3,7 +3,7 @@ import {
 	jest,
 } from '@jest/globals';
 
-import idle from '@pixdif/core/util/idle';
+import idle from '@pixdif/core/util/idle.js';
 
 jest.useFakeTimers();
 

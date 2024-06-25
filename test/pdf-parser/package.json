@@ -2,8 +2,6 @@
   "name": "@pixdif/pdf-parser",
   "version": "0.9.1",
   "description": "This is a fake parser. It is used in tests only.",
-  "main": "index.js",
-  "dependencies": {
-    "@pixdif/png-parser": "file:../../src/png-parser"
-  }
+  "type": "module",
+  "main": "index.js"
 }

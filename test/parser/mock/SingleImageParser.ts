@@ -1,8 +1,8 @@
 import fs from 'fs';
 import { Parser, Outline, Page } from '@pixdif/parser';
 
-import SingleImageOutline from './SingleImageOutline';
-import SingleImage from './SingleImagePage';
+import SingleImageOutline from './SingleImageOutline.js';
+import SingleImage from './SingleImagePage.js';
 
 export default class SingleImageParser extends Parser {
 	override async openFile(): Promise<void> {

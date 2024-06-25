@@ -1,4 +1,4 @@
-import DiffOptions from './DiffOptions';
+import DiffOptions from './DiffOptions.js';
 
 export interface Config extends DiffOptions {
 	/**

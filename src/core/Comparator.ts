@@ -10,11 +10,11 @@ import {
 } from '@pixdif/model';
 import { Parser } from '@pixdif/parser';
 
-import CacheManager from './CacheManager';
+import CacheManager from './CacheManager.js';
 
-import compareImage from './util/compareImage';
-import parse from './util/parse';
-import waitFor from './util/waitFor';
+import compareImage from './util/compareImage.js';
+import parse from './util/parse.js';
+import waitFor from './util/waitFor.js';
 
 function getImageDir(filePath: string): string {
 	const info = path.parse(filePath);
@@ -238,7 +238,7 @@ export class Comparator extends EventEmitter implements ComparatorEvents {
 		}
 
 		// Read baseline cache meta
-		const baseline = new CacheManager(parse(expected), {
+		const baseline = new CacheManager(await parse(expected), {
 			cacheDir: path.join(this.cacheDir, getImageDir(expected)),
 		});
 
@@ -274,7 +274,7 @@ export class Comparator extends EventEmitter implements ComparatorEvents {
 			return;
 		}
 
-		const parser = parse(actual);
+		const parser = await parse(actual);
 		await parser.open();
 		return parser;
 	}

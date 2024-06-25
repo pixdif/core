@@ -1,5 +1,5 @@
-import Config from './Config';
-import TestCase from './TestCase';
+import Config from './Config.js';
+import TestCase from './TestCase.js';
 
 /**
  * Define an extra column.

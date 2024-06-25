@@ -2,13 +2,14 @@
   "name": "@pixdif/pixdif",
   "version": "0.8.0",
   "description": "A Library to compare and show visual differences",
+  "type": "module",
   "main": "dist",
   "scripts": {
     "build": "tsc",
     "debug": "tsc --sourceMap --incremental",
     "test": "npm run lint && npm run jest",
     "lint": "eslint --ext=js,ts --max-warnings=0 .",
-    "jest": "jest --no-cache --coverage"
+    "jest": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --no-cache --coverage"
   },
   "repository": {
     "type": "git",
@@ -33,14 +34,14 @@
     "@pixdif/png-parser": "file:src/png-parser"
   },
   "devDependencies": {
-    "@pixdif-tests/core": "file:test/core",
-    "@pixdif-tests/parser": "file:test/parser",
     "@pixdif/html-reporter": "^0.3.2",
+    "@pixdif/pdf-parser": "file:test/pdf-parser",
     "@types/node": "^20.12.12",
     "@types/pixelmatch": "^5.2.4",
     "@types/pngjs": "^6.0.1",
     "@typescript-eslint/eslint-plugin": "^7.9.0",
     "@typescript-eslint/parser": "^7.9.0",
+    "cross-env": "^7.0.3",
     "eslint": "^8.57.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.29.1",
