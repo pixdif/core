@@ -3,9 +3,9 @@ import {
 	it,
 } from '@jest/globals';
 import fs from 'fs';
+import fsp from 'fs/promises';
 import path from 'path';
 
-import { rimraf } from 'rimraf';
 import { Config, TestCase, TestStatus } from '@pixdif/model';
 
 import TestReport from '@pixdif/core/TestReport.js';
@@ -17,7 +17,7 @@ const config: Config = {
 
 it('saves an empty report', async () => {
 	const to = 'output/empty-report/';
-	await rimraf(to);
+	await fsp.rm(to, { recursive: true, force: true });
 
 	const report = new TestReport(to, config);
 	report.setFormat('@pixdif/html-reporter');
@@ -30,7 +30,7 @@ it('saves an empty report', async () => {
 
 it('saves a success and a failure', async () => {
 	const to = 'output/test-report';
-	await rimraf(to);
+	await fsp.rm(to, { recursive: true, force: true });
 
 	const success: TestCase = {
 		name: 'success',

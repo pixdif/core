@@ -3,9 +3,9 @@ import {
 	it,
 } from '@jest/globals';
 import fs from 'fs';
+import fsp from 'fs/promises';
 import path from 'path';
 import { PNG } from 'pngjs';
-import { rimraf } from 'rimraf';
 
 import Comparator, { compare } from '@pixdif/core/Comparator.js';
 import waitFor from '@pixdif/core/util/waitFor.js';
@@ -25,7 +25,7 @@ it('compares the same PDF file', async () => {
 it('compares 2 different PDF files', async () => {
 	const imageDir = 'output/cmp-diff';
 	if (fs.existsSync(imageDir)) {
-		await rimraf(imageDir);
+		await fsp.rm(imageDir, { recursive: true, force: true });
 	}
 
 	const cmp = new Comparator('test/sample/shape.pdf', 'test/sample/square.pdf', {
@@ -48,7 +48,7 @@ it('compares 2 different PDF files', async () => {
 it('compres 2 different PNG images', async () => {
 	const imageDir = 'output/cmp-image';
 	if (fs.existsSync(imageDir)) {
-		await rimraf(imageDir);
+		await fsp.rm(imageDir, { recursive: true, force: true });
 	}
 
 	const cmp = new Comparator('test/sample/shapes-a.png', 'test/sample/shapes-b.png', {

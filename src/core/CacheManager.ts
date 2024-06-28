@@ -4,7 +4,6 @@ import path from 'path';
 import { EventEmitter } from 'events';
 import { Readable } from 'stream';
 
-import { rimraf } from 'rimraf';
 import { Progress } from '@pixdif/model';
 import { Parser } from '@pixdif/parser';
 
@@ -90,7 +89,7 @@ class CacheManager extends EventEmitter implements CacheManagerEvents {
 			return;
 		}
 
-		await rimraf(this.cacheDir);
+		await fsp.rm(this.cacheDir, { recursive: true, force: true });
 	}
 
 	protected async openCache(): Promise<boolean> {

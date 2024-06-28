@@ -4,7 +4,7 @@ import {
 	it,
 } from '@jest/globals';
 import path from 'path';
-import { rimraf } from 'rimraf';
+import fsp from 'fs/promises';
 import { ColumnDefinition, TestStatus } from '@pixdif/model';
 
 import { BatchComparator, BatchTask } from '@pixdif/core';
@@ -14,7 +14,7 @@ const to = 'output/batch';
 const cmp = new BatchComparator(to);
 
 beforeAll(async () => {
-	await rimraf(to);
+	await fsp.rm(to, { recursive: true, force: true });
 });
 
 it('checks properties', () => {
