@@ -53,6 +53,7 @@ it('compres 2 different PNG images', async () => {
 
 	const cmp = new Comparator('test/sample/shapes-a.png', 'test/sample/shapes-b.png', {
 		imageDir,
+		diffMask: true,
 	});
 	const diff = await cmp.exec();
 	expect(diff).toHaveLength(1);

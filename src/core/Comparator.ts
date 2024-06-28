@@ -4,7 +4,8 @@ import path from 'path';
 import { EventEmitter } from 'events';
 import { PassThrough } from 'stream';
 
-import {
+import type {
+	DiffOptions,
 	Progress,
 	TestPoint,
 } from '@pixdif/model';
@@ -43,7 +44,7 @@ export const enum Action {
 	Comparing = 'comparing',
 }
 
-export interface ComparisonOptions {
+export interface ComparisonOptions extends Partial<DiffOptions> {
 	/**
 	 * Cache directory of intermediate results, mainly images converted from baselines.
 	 */
@@ -87,6 +88,8 @@ export class Comparator extends EventEmitter implements ComparatorEvents {
 
 	protected imageDir: string;
 
+	protected diffOptions: DiffOptions;
+
 	protected tasks: Promise<unknown>[] = [];
 
 	/**
@@ -95,13 +98,20 @@ export class Comparator extends EventEmitter implements ComparatorEvents {
 	 * @param actual actual file path
 	 * @param options extra options
 	 */
-	constructor(expected: string, actual: string, options?: ComparisonOptions) {
+	constructor(expected: string, actual: string, options: ComparisonOptions = {}) {
 		super();
 
 		this.expected = expected;
 		this.actual = actual;
-		this.cacheDir = options?.cacheDir ?? 'cache';
-		this.imageDir = options?.imageDir ?? getImageDir(actual);
+		const {
+			cacheDir = 'cache',
+			imageDir = getImageDir(actual),
+			tolerance = 0.001,
+			...diffOptions
+		} = options;
+		this.cacheDir = cacheDir;
+		this.imageDir = imageDir;
+		this.diffOptions = { tolerance, ...diffOptions };
 	}
 
 	getExpected(): string {
@@ -178,7 +188,7 @@ export class Comparator extends EventEmitter implements ComparatorEvents {
 
 			if (expectedImage && actualImage) {
 				try {
-					const res = await compareImage(expectedImage, actualImage);
+					const res = await compareImage(expectedImage, actualImage, this.diffOptions);
 					ratio = res.diff / res.dimension;
 					if (res.diff > 0) {
 						const diffImageFile = res.image.pack().pipe(fs.createWriteStream(diffPath));

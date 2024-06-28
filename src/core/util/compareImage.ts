@@ -1,6 +1,7 @@
 import { Readable } from 'stream';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
+import type { DiffOptions } from '@pixdif/model';
 
 import clipImage from './clipImage.js';
 import waitFor from './waitFor.js';
@@ -31,6 +32,7 @@ interface Comparison {
 async function compareImage(
 	expected: Readable,
 	actual: Readable,
+	options?: DiffOptions,
 ): Promise<Comparison> {
 	const imageA = expected.pipe(new PNG());
 	const imageB = actual.pipe(new PNG());
@@ -65,6 +67,7 @@ async function compareImage(
 	diffNum += pixelmatch(dataA, dataB, diff.data, width, height, {
 		threshold: 0.1,
 		diffMask: true,
+		...options,
 	});
 
 	return {
