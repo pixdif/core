@@ -5,8 +5,8 @@
   "type": "module",
   "main": "dist",
   "scripts": {
-    "build": "tsc",
-    "debug": "tsc --sourceMap --incremental",
+    "build": "tsc -p src",
+    "debug": "tsc -p src --sourceMap --incremental",
     "test": "npm run lint && npm run jest",
     "lint": "eslint --ext=js,ts --max-warnings=0 .",
     "jest": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --no-cache --coverage"

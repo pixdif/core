@@ -1,4 +1,4 @@
-/** @type {import('ts-jest/dist/types').JestConfigWithTsJest} */
+/** @type {import('ts-jest').JestConfigWithTsJest} */
 export default {
 	testEnvironment: 'node',
 	collectCoverageFrom: [
@@ -14,7 +14,6 @@ export default {
 			'ts-jest',
 			{
 				useESM: true,
-				tsconfig: 'test/tsconfig.json',
 			},
 		],
 	},
