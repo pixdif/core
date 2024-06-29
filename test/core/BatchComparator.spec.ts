@@ -36,6 +36,18 @@ it('cannot execute 0 tasks', async () => {
 
 it('adds tasks', async () => {
 	cmp.addTask(new BatchTask({
+		name: 'expected not found',
+		path: 'test/sample/expected-not-found.yaml',
+		expected: 'test/sample/not-found.pdf',
+		actual: 'test/sample/square.pdf',
+	}));
+	cmp.addTask(new BatchTask({
+		name: 'actual not found',
+		path: 'test/sample/actual-not-found.yaml',
+		expected: 'test/sample/shape.pdf',
+		actual: 'test/sample/not-found.pdf',
+	}));
+	cmp.addTask(new BatchTask({
 		name: 'shape to shape',
 		expected: 'test/sample/shape.pdf',
 		actual: 'test/sample/shape.pdf',
@@ -48,18 +60,6 @@ it('adds tasks', async () => {
 		path: 'test/sample/shape-to-square.yaml',
 		expected: 'test/sample/shape.pdf',
 		actual: 'test/sample/square.pdf',
-	}));
-	cmp.addTask(new BatchTask({
-		name: 'expected not found',
-		path: 'test/sample/expected-not-found.yaml',
-		expected: 'test/sample/not-found.pdf',
-		actual: 'test/sample/square.pdf',
-	}));
-	cmp.addTask(new BatchTask({
-		name: 'actual not found',
-		path: 'test/sample/actual-not-found.yaml',
-		expected: 'test/sample/shape.pdf',
-		actual: 'test/sample/not-found.pdf',
 	}));
 	cmp.addTask(new BatchTask({
 		name: 'fewer pages',
@@ -83,9 +83,43 @@ it('collects test cases', async () => {
 	await report.collect();
 });
 
-it('can correctly show matched pages', () => {
+it('skips comparing if expected file is not found', () => {
 	const testCase = report.get(0)!;
+	expect(testCase.name).toBe('expected not found');
+	expect(testCase.status).toBe(TestStatus.ExpectedNotFound);
+
 	const imageDir = 'data/1';
+	const details = testCase.details!;
+	expect(details).toHaveLength(1);
+	expect(details[0]).toEqual({
+		expected: path.join(imageDir, 'expected/1.png'),
+		diff: path.join(imageDir, '1.png'),
+		actual: path.join(imageDir, 'actual/1.png'),
+		name: 'Page 1',
+		ratio: 1,
+	});
+});
+
+it('skips comparing if actual file is not found', () => {
+	const testCase = report.get(1)!;
+	expect(testCase.name).toBe('actual not found');
+	expect(testCase.status).toBe(TestStatus.ActualNotFound);
+
+	const imageDir = 'data/2';
+	const details = testCase.details!;
+	expect(details).toHaveLength(1);
+	expect(details[0]).toEqual({
+		expected: path.join(imageDir, 'expected/1.png'),
+		diff: path.join(imageDir, '1.png'),
+		actual: path.join(imageDir, 'actual/1.png'),
+		name: 'Page 1',
+		ratio: 1,
+	});
+});
+
+it('can correctly show matched pages', () => {
+	const testCase = report.get(2)!;
+	const imageDir = 'data/3';
 	const shapeFile = path.normalize('../../test/sample/shape.pdf');
 	expect(testCase.name).toBe('shape to shape');
 	expect(testCase.expected).toBe(shapeFile);
@@ -107,7 +141,7 @@ it('can correctly show matched pages', () => {
 });
 
 it('can tell differences', () => {
-	const testCase = report.get(1)!;
+	const testCase = report.get(3)!;
 	expect(testCase.name).toBe('shape to square');
 	expect(testCase.path).toBe(path.normalize('../../test/sample/shape-to-square.yaml'));
 	expect(testCase.expected).toBe(path.normalize('../../test/sample/shape.pdf'));
@@ -117,40 +151,6 @@ it('can tell differences', () => {
 	const details = testCase.details!;
 	expect(details).toHaveLength(1);
 	expect(details[0].ratio).toBeGreaterThan(0);
-});
-
-it('skips comparing if expected file is not found', () => {
-	const testCase = report.get(2)!;
-	expect(testCase.name).toBe('expected not found');
-	expect(testCase.status).toBe(TestStatus.ExpectedNotFound);
-
-	const imageDir = 'data/3';
-	const details = testCase.details!;
-	expect(details).toHaveLength(1);
-	expect(details[0]).toEqual({
-		expected: path.join(imageDir, 'expected/1.png'),
-		diff: path.join(imageDir, '1.png'),
-		actual: path.join(imageDir, 'actual/1.png'),
-		name: 'Page 1',
-		ratio: 1,
-	});
-});
-
-it('skips comparing if actual file is not found', () => {
-	const testCase = report.get(3)!;
-	expect(testCase.name).toBe('actual not found');
-	expect(testCase.status).toBe(TestStatus.ActualNotFound);
-
-	const imageDir = 'data/4';
-	const details = testCase.details!;
-	expect(details).toHaveLength(1);
-	expect(details[0]).toEqual({
-		expected: path.join(imageDir, 'expected/1.png'),
-		diff: path.join(imageDir, '1.png'),
-		actual: path.join(imageDir, 'actual/1.png'),
-		name: 'Page 1',
-		ratio: 1,
-	});
 });
 
 it('can handle fewer pages than expected', () => {

@@ -1,4 +1,3 @@
-import fs from 'fs';
 import fsp from 'fs/promises';
 import path from 'path';
 import { glob } from 'glob';
@@ -50,14 +49,15 @@ export class TestReport {
 		const testCaseFileNames = await glob('**/test-case.pixdif.json', {
 			cwd: this.location,
 		});
-		const testCaseFiles = testCaseFileNames.map((fileName) => {
+		const testCaseFiles = await Promise.all(testCaseFileNames.map(async (fileName) => {
 			const location = path.join(this.location, fileName);
-			const stat = fs.statSync(location);
+			const { birthtimeMs } = await fsp.stat(location);
 			return {
 				location,
-				modifiedTime: stat.mtime,
+				birthTime: birthtimeMs,
 			};
-		}).sort((a, b) => a.modifiedTime.getTime() - b.modifiedTime.getTime());
+		}));
+		testCaseFiles.sort((a, b) => a.birthTime - b.birthTime);
 		for (const { location } of testCaseFiles) {
 			const testCase = JSON.parse(await fsp.readFile(location, 'utf-8'));
 			this.testCases.push(this.#resolveTestCase(testCase));
