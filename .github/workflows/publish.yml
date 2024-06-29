@@ -28,6 +28,7 @@ jobs:
         run: |
           for pkgDir in $(ls src); do
             cp src/$pkgDir/package.json dist/$pkgDir
+            cp src/$pkgDir/README.md dist/$pkgDir
             cp LICENSE dist/$pkgDir
             (cd dist/$pkgDir && npm publish --access=public)
           done
