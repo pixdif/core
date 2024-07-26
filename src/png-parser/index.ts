@@ -17,7 +17,6 @@ export default class PngParser extends Parser {
 		throw new Error(`Out of bound: ${index}`);
 	}
 
-	// eslint-disable-next-line class-methods-use-this
 	override async getOutline(): Promise<Outline[]> {
 		return [];
 	}

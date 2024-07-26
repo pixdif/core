@@ -50,7 +50,7 @@ describe('Non-existing Image', () => {
 	test('Open a non-existing image', async () => {
 		await parser.open();
 		expect(await parser.getPageNum()).toBe(0);
-		expect(() => parser.getPage(0)).rejects.toThrowError('Invalid page index: 0');
+		await expect(() => parser.getPage(0)).rejects.toThrowError('Invalid page index: 0');
 	});
 
 	test('Read a non-existing image', async () => {

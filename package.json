@@ -8,7 +8,7 @@
     "build": "tsc -p src",
     "debug": "tsc -p src --sourceMap --incremental",
     "test": "npm run lint && npm run jest",
-    "lint": "eslint --ext=js,ts --max-warnings=0 .",
+    "lint": "eslint --max-warnings=0 .",
     "jest": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --no-cache --coverage"
   },
   "repository": {
@@ -34,21 +34,20 @@
     "@pixdif/png-parser": "file:src/png-parser"
   },
   "devDependencies": {
+    "@eslint/js": "^9.7.0",
     "@pixdif/html-reporter": "^0.10.0",
     "@pixdif/pdf-parser": "file:test/pdf-parser",
+    "@types/eslint__js": "^8.42.3",
     "@types/node": "^20.12.12",
     "@types/pixelmatch": "^5.2.4",
     "@types/pngjs": "^6.0.1",
-    "@typescript-eslint/eslint-plugin": "^7.9.0",
-    "@typescript-eslint/parser": "^7.9.0",
     "cross-env": "^7.0.3",
     "eslint": "^8.57.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.29.1",
     "glob": "^10.3.15",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^7.17.0"
   },
   "workspaces": [
     "src/*",

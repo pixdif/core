@@ -64,7 +64,7 @@ class CacheManager extends EventEmitter implements CacheManagerEvents {
 
 		await this.parser.open();
 		const pageNum = await this.parser.getPageNum();
-		const outputs: Promise<void>[] = new Array(pageNum);
+		const outputs: Promise<void>[] = new Array<Promise<void>>(pageNum);
 		for (let i = 0; i < pageNum; i++) {
 			const cache = await this.createPageCache(i);
 			if (cache) {
@@ -103,7 +103,7 @@ class CacheManager extends EventEmitter implements CacheManagerEvents {
 
 		let meta: Partial<CacheMeta> = {};
 		try {
-			meta = JSON.parse(await fsp.readFile(metaFile, 'utf-8'));
+			meta = JSON.parse(await fsp.readFile(metaFile, 'utf-8')) as Partial<CacheMeta>;
 		} catch (error) {
 			// Do nothing
 		}

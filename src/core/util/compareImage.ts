@@ -29,7 +29,7 @@ interface Comparison {
  * @param actual actual
  * @return number of mismatched pixels and total pixels
  */
-async function compareImage(
+export default async function compareImage(
 	expected: Readable,
 	actual: Readable,
 	options?: DiffOptions,
@@ -76,5 +76,3 @@ async function compareImage(
 		image: diff,
 	};
 }
-
-export default compareImage;

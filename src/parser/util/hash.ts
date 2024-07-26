@@ -32,7 +32,7 @@ export function hash(input: Readable, options?: Partial<HashOptions>): Promise<s
 
 		output.once('error', reject);
 		output.once('finish', () => {
-			resolve(output.read());
+			resolve(output.read() as string);
 		});
 	});
 }

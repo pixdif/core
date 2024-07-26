@@ -10,8 +10,12 @@ import {
 	TestReportWriter,
 } from '@pixdif/model';
 
+interface TestReportWriterModule extends TestReportWriter {
+	default?: TestReportWriter;
+}
+
 async function loadReportWriter(format: string): Promise<TestReportWriter> {
-	let reporter = await import(format);
+	let reporter = await import(format) as TestReportWriterModule;
 	for (let i = 0; i < 2 && reporter.default; i++) {
 		reporter = reporter.default;
 	}
@@ -59,7 +63,7 @@ export class TestReport {
 		}));
 		testCaseFiles.sort((a, b) => a.birthTime - b.birthTime);
 		for (const { location } of testCaseFiles) {
-			const testCase = JSON.parse(await fsp.readFile(location, 'utf-8'));
+			const testCase = JSON.parse(await fsp.readFile(location, 'utf-8')) as TestCase;
 			this.testCases.push(this.#resolveTestCase(testCase));
 		}
 	}
@@ -176,7 +180,7 @@ export class TestReport {
 	 */
 	async save(): Promise<void> {
 		switch (this.format) {
-		case TestReportFormat.Json:
+		case TestReportFormat.Json as string:
 			await fsp.writeFile(this.location, JSON.stringify(this));
 			break;
 		default:

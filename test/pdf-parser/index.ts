@@ -23,7 +23,6 @@ export default class PdfParser extends Parser {
 		return new PngFrame(`Page ${index + 1}`, `${fileName}.png`);
 	}
 
-	// eslint-disable-next-line class-methods-use-this
 	override async getOutline(): Promise<Outline[]> {
 		return [];
 	}
