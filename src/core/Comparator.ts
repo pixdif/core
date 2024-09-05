@@ -1,7 +1,7 @@
 import fs from 'fs';
 import fsp from 'fs/promises';
 import path from 'path';
-import { EventEmitter } from 'events';
+import { EventEmitter, once } from 'events';
 import { PassThrough } from 'stream';
 
 import type {
@@ -15,7 +15,6 @@ import CacheManager from './CacheManager.js';
 
 import compareImage from './util/compareImage.js';
 import parse from './util/parse.js';
-import waitFor from './util/waitFor.js';
 
 function getImageDir(filePath: string): string {
 	const info = path.parse(filePath);
@@ -170,7 +169,7 @@ export class Comparator extends EventEmitter implements ComparatorEvents {
 			if (actualImage) {
 				const actualImageFile = actualImage.pipe(new PassThrough())
 					.pipe(fs.createWriteStream(actualPath));
-				this.tasks.push(waitFor(actualImageFile, 'close'));
+				this.tasks.push(once(actualImageFile, 'close'));
 			}
 
 			const name = actualPage ? actualPage.getTitle() : `Page ${i}`;
@@ -192,7 +191,7 @@ export class Comparator extends EventEmitter implements ComparatorEvents {
 					ratio = res.diff / res.dimension;
 					if (res.diff > 0) {
 						const diffImageFile = res.image.pack().pipe(fs.createWriteStream(diffPath));
-						this.tasks.push(waitFor(diffImageFile, 'close'));
+						this.tasks.push(once(diffImageFile, 'close'));
 					}
 				} catch (error) {
 					this.emit(
@@ -267,7 +266,7 @@ export class Comparator extends EventEmitter implements ComparatorEvents {
 			const from = baseline.getImage(i - 1);
 			const to = fs.createWriteStream(path.join(expectedImageDir, `${i}.png`));
 			from.pipe(to);
-			this.tasks.push(waitFor(to, 'close'));
+			this.tasks.push(once(to, 'close'));
 		}
 
 		return baseline;

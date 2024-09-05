@@ -1,10 +1,10 @@
+import { once } from 'events';
 import { Readable } from 'stream';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
 import type { DiffOptions } from '@pixdif/model';
 
 import clipImage from './clipImage.js';
-import waitFor from './waitFor.js';
 
 interface Comparison {
 	/**
@@ -38,8 +38,8 @@ export default async function compareImage(
 	const imageB = actual.pipe(new PNG());
 
 	await Promise.all([
-		waitFor(imageA, 'parsed'),
-		waitFor(imageB, 'parsed'),
+		once(imageA, 'parsed'),
+		once(imageB, 'parsed'),
 	]);
 
 	let { width, height } = imageB;

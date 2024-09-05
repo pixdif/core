@@ -2,13 +2,13 @@ import {
 	expect,
 	it,
 } from '@jest/globals';
+import { once } from 'events';
 import fs from 'fs';
 import fsp from 'fs/promises';
 import path from 'path';
 import { PNG } from 'pngjs';
 
 import Comparator, { compare } from '@pixdif/core/Comparator.js';
-import waitFor from '@pixdif/core/util/waitFor.js';
 
 it('compares the same PDF file', async () => {
 	const imageDir = 'output/cmp-same';
@@ -40,7 +40,7 @@ it('compares 2 different PDF files', async () => {
 	expect(fs.existsSync(diffImageFile)).toBe(true);
 
 	const diffImage = fs.createReadStream(diffImageFile).pipe(new PNG());
-	await waitFor(diffImage, 'parsed');
+	await once(diffImage, 'parsed');
 	expect(diffImage.width).toBe(420);
 	expect(diffImage.height).toBe(600);
 }, 20 * 1000);

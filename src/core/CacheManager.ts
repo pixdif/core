@@ -1,13 +1,11 @@
 import fs from 'fs';
 import fsp from 'fs/promises';
 import path from 'path';
-import { EventEmitter } from 'events';
+import { EventEmitter, once } from 'events';
 import { Readable } from 'stream';
 
 import { Progress } from '@pixdif/model';
 import { Parser } from '@pixdif/parser';
-
-import waitFor from './util/waitFor.js';
 
 interface CacheMeta {
 	pageNum: number;
@@ -64,11 +62,11 @@ class CacheManager extends EventEmitter implements CacheManagerEvents {
 
 		await this.parser.open();
 		const pageNum = await this.parser.getPageNum();
-		const outputs: Promise<void>[] = new Array<Promise<void>>(pageNum);
+		const outputs: Promise<unknown>[] = new Array<Promise<void>>(pageNum);
 		for (let i = 0; i < pageNum; i++) {
 			const cache = await this.createPageCache(i);
 			if (cache) {
-				outputs[i] = waitFor(cache, 'finish');
+				outputs[i] = once(cache, 'finish');
 			}
 			this.emit('progress', { current: i + 1, limit: pageNum });
 		}
