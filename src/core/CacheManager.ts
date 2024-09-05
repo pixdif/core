@@ -102,7 +102,7 @@ class CacheManager extends EventEmitter {
 		let meta: Partial<CacheMeta> = {};
 		try {
 			meta = JSON.parse(await fsp.readFile(metaFile, 'utf-8')) as Partial<CacheMeta>;
-		} catch (error) {
+		} catch (ignore) {
 			// Do nothing
 		}
 

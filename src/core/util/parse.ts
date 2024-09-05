@@ -1,6 +1,8 @@
 import path from 'path';
 import { Parser } from '@pixdif/parser';
 
+import stringifyError from './stringifyError.js';
+
 export type ParserType = new(filePath: string) => Parser;
 
 interface ParserModule extends ParserType {
@@ -14,6 +16,6 @@ export default async function parse(filePath: string): Promise<Parser> {
 		const ParserClass: ParserType = ParserModule.default ?? ParserModule;
 		return new ParserClass(filePath);
 	} catch (error) {
-		throw new Error(`Failed to parse ${filePath}. Please install @pixdif/${ext}-parser and try again.`);
+		throw new Error(`Failed to parse ${filePath}. Please install @pixdif/${ext}-parser and try again. ${stringifyError(error)}`);
 	}
 }
