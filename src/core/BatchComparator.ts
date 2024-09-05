@@ -29,7 +29,7 @@ export interface BatchCompareProgress extends BatchProgress {
 	comparator: Comparator;
 }
 
-interface BatchComparatorEvents {
+export interface BatchComparator {
 	on(event: 'started', listener: () => void): this;
 	on(event: 'progress', listener: (progress: BatchProgress) => void): this;
 	on(event: 'comparing', listener: (progress: BatchCompareProgress) => void): this;
@@ -54,7 +54,7 @@ interface BatchComparatorEvents {
 /**
  * Compare multiple files in two directories.
  */
-export class BatchComparator extends EventEmitter implements BatchComparatorEvents {
+export class BatchComparator extends EventEmitter {
 	protected tasks: Readonly<BatchTask>[] = [];
 
 	protected tolerance: number;
