@@ -27,7 +27,9 @@ jobs:
         name: Publish
         run: |
           for pkgDir in $(ls src); do
-
+            if ! [ -f "src/$pkgDir/package.json" ]; then
+              continue
+            fi
             cp src/$pkgDir/package.json dist/$pkgDir
             cp src/$pkgDir/README.md dist/$pkgDir
             cp LICENSE dist/$pkgDir
