@@ -27,13 +27,13 @@ jobs:
         name: Publish
         run: |
           for pkgDir in $(ls src); do
-            if [ "v$(npm pkg get version | tr -d '"')" != "$GITHUB_REF_NAME" ]; then
-              continue
-            fi
+
             cp src/$pkgDir/package.json dist/$pkgDir
             cp src/$pkgDir/README.md dist/$pkgDir
             cp LICENSE dist/$pkgDir
-            (cd dist/$pkgDir && npm publish --access=public)
+            (cd dist/$pkgDir && if [ "v$(npm pkg get version | tr -d '"')" == "$GITHUB_REF_NAME" ]; then
+              npm publish --access=public
+            fi)
           done
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
