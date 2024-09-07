@@ -24,7 +24,7 @@
     "@pixdif/model": "^0.10.0",
     "@pixdif/parser": "^0.10.0",
     "glob": "^10.3.10",
-    "pixelmatch": "^5.3.0",
+    "pixelmatch": "^6.0.0",
     "pngjs": "^7.0.0"
   }
 }

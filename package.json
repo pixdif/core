@@ -39,7 +39,7 @@
     "@pixdif/pdf-parser": "file:test/pdf-parser",
     "@types/eslint__js": "^8.42.3",
     "@types/node": "^20.12.12",
-    "@types/pixelmatch": "^5.2.4",
+    "@types/pixelmatch": "^5.2.6",
     "@types/pngjs": "^6.0.1",
     "cross-env": "^7.0.3",
     "eslint": "^9.9.1",
